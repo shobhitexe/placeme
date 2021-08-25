@@ -67,23 +67,28 @@
       
             <!-- Modal body -->
             <div class="modal-body">
-                <form>
+                <form name = "loginform" action = "{% url 'loginhandle' %}" 
+                method = "POST" >{% csrf_token %}
                     <div class="mb-3">
                       <label for="username" class="form-label">Username</label>
-                      <input type="text" class="form-control" id="uname">
+                      <input type="text" name="uname" placeholder="Enter Username" class="form-control" id="uname">
                     </div>
                     <div class="mb-3">
                       <label for="password" class="form-label">Password</label>
-                      <input type="password" class="form-control" id="pwd">
+                      <input type="password" name="pwd" placeholder="Enter Password" class="form-control" id="pwd">
                     </div>
-                  </form>
+                    <button type="submit" class="btn btn-success">Login</button>
+                    <br>
+                    <br>
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-danger">
+                            {{message}}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </form>
             </div>
-      
-            <!-- Modal footer -->
-            <div class="modal-footer">
-              <button type="button" class="btn btn-success">Submit</button>
-            </div>
-      
           </div>
         </div>
       </div>
