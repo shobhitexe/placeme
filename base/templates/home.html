@@ -29,7 +29,9 @@
                             <li>add/delete companies</li>
                             <li>generate reports</li>
                     </ul>
-                    <a href="#" class="btn btn-primary">Login</a>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Login
+                    </button>                      
                     </div>
                 </div>
             </div>
@@ -44,12 +46,46 @@
                             <li>view companies</li>
                             <li>get notified about results</li>
                     </ul>
-                    <a href="#" class="btn btn-primary">Login</a>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Login
+                    </button>                      
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="loginModal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+      
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Login</h4>
+              <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            </div>
+      
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                      <label for="username" class="form-label">Username</label>
+                      <input type="text" class="form-control" id="uname">
+                    </div>
+                    <div class="mb-3">
+                      <label for="password" class="form-label">Password</label>
+                      <input type="password" class="form-control" id="pwd">
+                    </div>
+                  </form>
+            </div>
+      
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-success">Submit</button>
+            </div>
+      
+          </div>
+        </div>
+      </div>
 </body>  
 </html>  
