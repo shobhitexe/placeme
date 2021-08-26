@@ -14,19 +14,36 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">PlaceME</a>
+          <a class="navbar-brand" href="{% url 'loginhandle' %}">PlaceME</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
               {% if request.user.is_staff %}
-              <li class="nav-item">
-                <a class="nav-link" href="#">Students</a>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Students
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="#">Create Student Login Credentials</a></li>
+                  <li><a class="dropdown-item" href="#">Edit Student Placement Status</a></li>
+                </ul>
               </li>
               {% endif %}
-              <li class="nav-item">
-                <a class="nav-link" href="#">Placements</a>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Placements
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  {% if request.user.is_staff %}
+                  <li><a class="dropdown-item" href="#">Generate Placement Report</a></li>
+                  <li><a class="dropdown-item" href="#">Edit Placement Rules</a></li>
+                  {% else %}
+                  <li><a class="dropdown-item" href="#">View Placement Rules</a></li>
+                  <li><a class="dropdown-item" href="#">View Placement Results</a></li>
+                  {% endif %}
+                </ul>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">Companies</a>
@@ -38,7 +55,7 @@
             <a class="navbar-brand mx-auto">username: {{ request.user.username }}</a>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Logout</a>
+                    <a class="nav-link" href="{% url 'index' %}">Logout</a>
                 </li>
             </ul>
           </div>

@@ -1,11 +1,13 @@
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from django.contrib.auth import login,authenticate
+from django.contrib.auth import login,authenticate, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 def index_view(request):
+    if request.user is not None:
+        logout(request)
     return render(request,'index.html')
 
 @csrf_exempt
@@ -20,3 +22,5 @@ def login_handle_view(request):
         else:
             messages.error(request,"Invalid username or password.")
             return redirect(request.META['HTTP_REFERER'])
+    else:
+        return render(request,'home.html')

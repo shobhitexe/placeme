@@ -31,8 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'student',
-    'college',
     'base',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -128,8 +126,6 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
-     BASE_DIR / "blog" / "static",
-     BASE_DIR / "college" / "static",
-     BASE_DIR / "student" / "static",
+     BASE_DIR / "base" / "static",
      BASE_DIR / "static"
  ]
