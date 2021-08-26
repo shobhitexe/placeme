@@ -1,5 +1,60 @@
 {% extends 'base.html' %}
-
+{% load static %}  
 {% block content %}
+<br>
+<div class="container">
+    <div class="row">
+        {% if request.user.is_staff %}
+        <div class="col-lg-4 mb-4">
+            <div class="card" style="width:400px">
+                <img class="card-img-top" src="{% static 'images/student.png' %}" alt="Card image" height="350">
+                <div class="card-body">
+                <h4 class="card-title">Students</h4>
+                <ul class="card-text">
+                        <li>create student login credentials</li>
+                        <li>edit student placement status</li>
+                </ul>                 
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="col-lg-4 mb-4">
+            <div class="card" style="width:400px">
+                <img class="card-img-top" src="{% static 'images/student.png' %}" alt="Card image" height="350">
+                <div class="card-body">
+                <h4 class="card-title">Placements</h4>
+                <ul class="card-text">
+                    {% if request.user.is_staff %}
+                        <li>generate placement reports</li>
+                        <li>edit placement rules</li>
+                    {% else %}
+                        <li>view placement rules</li>
+                        <li>view placement results</li>
+                    {% endif %}
+                </ul>                   
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card" style="width:400px">
+                <img class="card-img-top" src="{% static 'images/student.png' %}" alt="Card image" height="350">
+                <div class="card-body">
+                <h4 class="card-title">Companies</h4>
+                <ul class="card-text">
+                    {% if request.user.is_staff %}
+                        <li>add new placement companies</li>
+                        <li>view placement applications</li>
+                        <li>view companies</li>
+                        <li>create application forms</li>
+                    {% else %}
+                        <li>view companies</li>
+                        <li>apply for company placement</li>
+                    {% endif %}
+                </ul>                 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-{% endblock %}
+{% endblock content %}

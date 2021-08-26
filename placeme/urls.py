@@ -20,5 +20,5 @@ from base.views import index_view,login_handle_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index_view, name='index'),
-    path('login/',login_handle_view,name='loginhandle')
+    path('home/',login_handle_view,name='loginhandle')
 ]
