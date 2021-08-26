@@ -4,8 +4,8 @@ from django.contrib.auth import login,authenticate
 from django.contrib import messages
 # Create your views here.
 
-def home_view(request):
-    return render(request,'home.html')
+def index_view(request):
+    return render(request,'index.html')
 
 
 def login_handle_view(request):
@@ -15,7 +15,7 @@ def login_handle_view(request):
         user = authenticate(username = username, password=password)
         if user is not None:
             login(request,user)
-            return HttpResponse('hi')
+            return render(request,'home.html')
         else:
             messages.error(request,"Invalid username or password.")
-            return render(request,'home.html')
+            return render(request,'index.html')
