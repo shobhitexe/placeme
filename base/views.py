@@ -3,6 +3,9 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import login,authenticate, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+import pandas as pd
+import csv
 # Create your views here.
 
 def index_view(request):
@@ -24,3 +27,29 @@ def login_handle_view(request):
             return redirect(request.META['HTTP_REFERER'])
     else:
         return render(request,'home.html')
+
+
+def student_cred_view(request):
+    if "GET" == request.method:
+        return render(request, 'student_cred.html', {})
+    else:
+        file = request.FILES["excel_file"]
+        if file.name.endswith('.csv'):
+            dataset = pd.read_csv(file)
+        elif file.name.endswith('.xlsx'):
+            dataset = pd.read_excel(file)
+        else:
+            messages.error(request,"Invalid file format.")
+            return render(request, 'student_cred.html', {})
+        student_details = dataset.iloc[:,0].values
+        pwd = []
+        for student_uname in student_details:
+            username = student_uname
+            password = User.objects.make_random_password()
+            user = User.objects.create_user(username=username,password=password)
+            pwd.append(password)
+        dataset['password'] = pwd
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=credentials.csv'
+        dataset.to_csv(path_or_buf=response)  # with other applicable parameters
+        return response
