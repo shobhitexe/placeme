@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}  
+{% load crispy_forms_tags %}
 {% block content %}
 {% if companies %}
 <br>
@@ -23,6 +24,7 @@
                     </ul>
                     <div class="card-footer text-muted">
                         {% if request.user.is_staff %}
+                        
                         <button class="btn btn-primary">Edit</button>
 
                         <form name = "deletecompany" action = "{% url 'company' %}" 
@@ -67,8 +69,27 @@
         <div class="modal-body">
             <form method = "post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ addform.as_p }}
-                <button type="submit" name="addcompany" value="1">Submit</button>
+                <div>
+                {{ addform.name|as_crispy_field }}
+                </div>
+                <br>
+                <div>
+                    {{ addform.description|as_crispy_field }}
+                </div>
+                <br>
+                <div>
+                    {{ addform.logo|as_crispy_field }}
+                </div>
+                <br>
+                <div>
+                    {{ addform.is_dream|as_crispy_field }}
+                </div>
+                <br>
+                <div>
+                    {{ addform.starting_salary|as_crispy_field }}
+                </div>
+                <br>
+                <button class="btn btn-primary" type="submit" name="addcompany" value="1">Submit</button>
             </form>
         </div>
       </div>
