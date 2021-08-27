@@ -65,7 +65,13 @@ def company_view(request):
         addform = AddCompanyForm()
         return render(request,'company.html',{'companies': companies, 'addform':addform})
     else:
-        addform = AddCompanyForm(request.POST, request.FILES)
-        if addform.is_valid():
-            addform.save()
-        return HttpResponseRedirect(request.path_info)
+        if request.POST.get("addcompany"):
+            addform = AddCompanyForm(request.POST, request.FILES)
+            if addform.is_valid():
+                addform.save()
+            return HttpResponseRedirect(request.path_info)
+        elif request.POST.get("deletecompany"):  # You can use else in here too if there is only 2 submit types.
+            id = request.POST.get("deletecompany")
+            instance = Company.objects.get(id=id)
+            instance.delete()
+            return HttpResponseRedirect(request.path_info)

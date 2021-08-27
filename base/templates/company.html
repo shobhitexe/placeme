@@ -21,6 +21,20 @@
                         <li class="list-group-item">Super-Dream Company : {{company.is_dream}}</li>
                         <li class="list-group-item">Starting Salary : {{company.starting_salary}}</li>
                     </ul>
+                    <div class="card-footer text-muted">
+                        {% if request.user.is_staff %}
+                        <button class="btn btn-primary">Edit</button>
+
+                        <form name = "deletecompany" action = "{% url 'company' %}" 
+                        method = "POST" >{% csrf_token %}
+                            <button class="btn btn-danger" name="deletecompany" type="submit" value="{{company.id}}">Delete</button>
+                        </form>
+
+                        <button class="btn btn-success">Create Form</button>
+                        {% else %}
+                        <button class="btn btn-success">Apply</button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         {% endfor %}
@@ -54,7 +68,7 @@
             <form method = "post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ addform.as_p }}
-                <button type="submit">Submit</button>
+                <button type="submit" name="addcompany" value="1">Submit</button>
             </form>
         </div>
       </div>
