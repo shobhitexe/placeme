@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}  
+{% block content %}
+{% if companies %}
+<br>
+<div class="container-fluid">
+    <div class="row">
+        {% for company in companies %}
+            <div class="col-auto">
+                <div class="card border-primary mb-4">
+                        {% if company.logo %}
+                        <img style="height: 200px; width: 100%; display: block;" src="{{ company.logo.url }}" alt="Card image">
+                        {% else %}
+                        <img style="height: 200px; width: 100%; display: block;" src="{% static 'images/company.jpeg' %}" alt="Card image">
+                        {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title">{{ company.name }}</h4>
+                        <p class="card-text">{{ company.description }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Super-Dream Company : {{company.is_dream}}</li>
+                        <li class="list-group-item">Starting Salary : {{company.starting_salary}}</li>
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">No Companies Added !! </h4>
+    <p>You have not yet added any companies.</p>
+</div>
+{% endif %}
+
+<div class="form-group" style="margin-top: 12%; float:right; position: relative; ">
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <button class="btn btn-success btn-circle btn-xl" id="add" data-bs-toggle="modal" data-bs-target="#AddCompanyModal">Add</button>
+    </div>
+</div>
+
+<div class="modal fade" id="AddCompanyModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Add Company</h4>
+          <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+            <form method = "post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ addform.as_p }}
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<style type="text/css">
+    .btn-circle.btn-xl {
+        width: 70px;
+        height: 70px;
+        padding: 10px 16px;
+        border-radius: 35px;
+        font-size: 20px;
+        text-align: center;
+    }
+    #add 
+    {
+        position: fixed;
+        right: 10px;
+        bottom: 10px;
+    }
+</style>
+
+{% endblock content %}

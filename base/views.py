@@ -1,10 +1,12 @@
 from django.http.response import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, HttpResponseRedirect
 from django.contrib.auth import login,authenticate, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
+from .models import Company
+from .forms import AddCompanyForm
 import csv
 # Create your views here.
 
@@ -53,3 +55,17 @@ def student_cred_view(request):
         response['Content-Disposition'] = 'attachment; filename=credentials.csv'
         dataset.to_csv(path_or_buf=response)  # with other applicable parameters
         return response
+
+
+def company_view(request):
+    companies = Company.objects.all()
+    if not companies.exists():
+        companies = None 
+    if request.method == 'GET':
+        addform = AddCompanyForm()
+        return render(request,'company.html',{'companies': companies, 'addform':addform})
+    else:
+        addform = AddCompanyForm(request.POST, request.FILES)
+        if addform.is_valid():
+            addform.save()
+        return HttpResponseRedirect(request.path_info)
