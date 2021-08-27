@@ -24,14 +24,64 @@
                     </ul>
                     <div class="card-footer text-muted">
                         {% if request.user.is_staff %}
-                        
-                        <button class="btn btn-primary">Edit</button>
+                        <a data-bs-toggle="modal" data-id="{{company.id}}" class="edit-company">
+                        <button class="btn btn-primary" id="edit" data-bs-toggle="modal" data-bs-target="#EditCompanyModal">Edit</button>
+                        </a>
+                        <div class="modal fade" id="EditCompanyModal">
+                            <div class="modal-dialog modal-dialog-centered">
+                              <div class="modal-content">
+                          
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                  <h4 class="modal-title">Edit Company</h4>
+                                  <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                                </div>
+                          
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    <form method = "post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div>
+                                        {{ addform.name|as_crispy_field }}
+                                        </div>
+                                        <br>
+                                        <div>
+                                            {{ addform.description|as_crispy_field }}
+                                        </div>
+                                        <br>
+                                        <div>
+                                            {{ addform.logo|as_crispy_field }}
+                                        </div>
+                                        <br>
+                                        <div>
+                                            {{ addform.is_dream|as_crispy_field }}
+                                        </div>
+                                        <br>
+                                        <div>
+                                            {{ addform.starting_salary|as_crispy_field }}
+                                        </div>
+                                        <br>
+                                        <button class="btn btn-primary" type="submit" id="sub" name="updatecompany" value="{{company.id}}">Update</button>
+                                    </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+                          <script>
+                            $(document).on("click", ".edit-company", function () {
+                             var id = $(this).attr('data-id');
+                             $(".modal-body #sub").val( id );
+                            });
+                          </script>
 
                         <form name = "deletecompany" action = "{% url 'company' %}" 
                         method = "POST" >{% csrf_token %}
+                        <br>
                             <button class="btn btn-danger" name="deletecompany" type="submit" value="{{company.id}}">Delete</button>
                         </form>
-
+                        <br>
                         <button class="btn btn-success">Create Form</button>
                         {% else %}
                         <button class="btn btn-success">Apply</button>

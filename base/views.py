@@ -1,5 +1,5 @@
 from django.http.response import HttpResponse
-from django.shortcuts import redirect, render, HttpResponseRedirect
+from django.shortcuts import redirect, render, HttpResponseRedirect, get_object_or_404
 from django.contrib.auth import login,authenticate, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
@@ -74,4 +74,11 @@ def company_view(request):
             id = request.POST.get("deletecompany")
             instance = Company.objects.get(id=id)
             instance.delete()
+            return HttpResponseRedirect(request.path_info)
+        elif request.POST.get("updatecompany"): 
+            id = request.POST.get("updatecompany")
+            company = get_object_or_404(Company,pk=id)
+            form = AddCompanyForm(request.POST, request.FILES, instance=company)
+            if form.is_valid():
+	            form.save()
             return HttpResponseRedirect(request.path_info)
