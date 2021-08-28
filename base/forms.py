@@ -9,6 +9,7 @@ class AddCompanyForm(forms.ModelForm):
     class Meta:
         model = Company
         fields = "__all__"
+        labels ={'is_dream': 'Dream Company','starting_salary':'Starting Salary'}
 
 class StudentDetailsForm(forms.ModelForm):
   

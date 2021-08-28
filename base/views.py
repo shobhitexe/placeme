@@ -136,6 +136,9 @@ def profile_view(request):
 def academics_view(request):
     if request.method == 'GET':
         studform = StudentDetailsForm()
+        student = Student.objects.get(user_id=request.user.id)
+        for field,attr in zip(studform.fields,student._meta.get_fields()):
+            studform[field].initial = getattr(student,attr.name)
         return render(request,'academics.html',{'form':studform})
     else:
         studform = StudentDetailsForm(request.POST, request.FILES)
