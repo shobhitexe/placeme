@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
-from .models import Company
+from .models import Company,Student
 from django.contrib.auth.password_validation import password_changed,validate_password
 from .forms import AddCompanyForm,StudentDetailsForm
 from django.core.exceptions import ValidationError
@@ -137,4 +137,8 @@ def academics_view(request):
     if request.method == 'GET':
         studform = StudentDetailsForm()
         return render(request,'academics.html',{'form':studform})
-    return render(request,'academics.html')
+    else:
+        studform = StudentDetailsForm(request.POST, request.FILES)
+        if studform.is_valid():
+            studform.save()
+        return HttpResponseRedirect(request.path_info)
