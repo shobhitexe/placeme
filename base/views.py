@@ -136,13 +136,23 @@ def profile_view(request):
 def academics_view(request):
     if request.method == 'GET':
         studform = StudentDetailsForm()
-        student = Student.objects.get(user_id=request.user.id)
-        for field,attr in zip(studform.fields,student._meta.get_fields()):
-            studform[field].initial = getattr(student,attr.name)
-        return render(request,'academics.html',{'form':studform})
+        try:
+            student = Student.objects.get(user_id=request.user.id)
+            for field,attr in zip(studform.fields,student._meta.get_fields()):
+                studform[field].initial = getattr(student,attr.name)
+            return render(request,'academics.html',{'form':studform})
+        except:  
+            return render(request,'academics.html',{'form':studform})
     else:
-        studform = StudentDetailsForm(request.POST, request.FILES)
-        studform.instance.user = request.user
-        if studform.is_valid():
-            studform.save()
-        return HttpResponseRedirect(request.path_info)
+        try:
+            student = get_object_or_404(Student,user_id=request.user.id)
+            studform = StudentDetailsForm(request.POST, request.FILES, instance=student)
+            if studform.is_valid():
+	            studform.save()
+            return HttpResponseRedirect(request.path_info)
+        except:
+            studform = StudentDetailsForm(request.POST, request.FILES)
+            studform.instance.user = request.user
+            if studform.is_valid():
+                studform.save()
+            return HttpResponseRedirect(request.path_info)
