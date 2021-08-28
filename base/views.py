@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 import pandas as pd
 from .models import Company
 from django.contrib.auth.password_validation import password_changed,validate_password
-from .forms import AddCompanyForm
+from .forms import AddCompanyForm,StudentDetailsForm
 from django.core.exceptions import ValidationError
 import csv
 # Create your views here.
@@ -131,3 +131,10 @@ def profile_view(request):
             if user is not None:
                 login(request,user)
         return HttpResponseRedirect(request.path_info)
+
+
+def academics_view(request):
+    if request.method == 'GET':
+        studform = StudentDetailsForm()
+        return render(request,'academics.html',{'form':studform})
+    return render(request,'academics.html')

@@ -45,6 +45,12 @@
                   {% endif %}
                 </ul>
               </li>
+              {% if request.user.is_staff %}
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'academics' %}">Academics</a>
+              </li>
+              {% endif %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'company' %}">Companies</a>
               </li>

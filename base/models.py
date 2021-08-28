@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
+from django.db.models.fields.json import JSONField
 
 # Create your models here.
 
@@ -24,3 +25,70 @@ class Company(models.Model):
     
     class Meta:
         verbose_name_plural = "Company"
+
+class Student(models.Model):
+    description = models.TextField(max_length=500,blank=False)
+    prn_number = models.CharField(max_length=16,blank=False)
+    contact_number = models.CharField(max_length=10,blank=False)
+    college_email_id = models.EmailField(blank=False)
+    GENDER_CHOICES = (
+        ('F', 'Female',),
+        ('M', 'Male',),
+        ('O', 'Other',),
+    )
+    BOARD_10_CHOICES = (
+        ('ICSE', 'ICSE',),
+        ('SSC', 'SSC',),
+        ('IGCSE', 'IGCSE',),
+        ('CBSE', 'CBSE',),
+        ('IB', 'IB',),
+    )
+    BOARD_12_CHOICES = (
+        ('HSC', 'HSC',),
+        ('ISC', 'ISC',),
+        ('CBSE', 'CBSE',),
+        ('IB', 'IB',),
+        ('IGCSE', 'IGCSE',),
+        ('Diploma', 'Diploma',),
+    )
+    STREAM_CHOICES = (
+        ('BE', 'Bachelor of Engineering',),
+    )
+    SPECIALIZATION_CHOICES = (
+         ('Comps', 'Computer Engineering',),
+         ('IT', 'Information Technology',),
+         ('Biomed', 'Biomedical Engineering',),
+         ('EXTC', 'Electronics and Telecommunication',),
+         ('Chemical', 'Chemical Engineering',),
+         ('AI/DS', 'Artificial Intelligence and Data Science',),
+         ('O', 'Other',),
+    )
+    gender = models.CharField(max_length=1,choices=GENDER_CHOICES,blank=False)
+    hometown = models.CharField(max_length=25,blank=False)
+    class10_board = models.CharField(max_length=10,choices=BOARD_10_CHOICES,blank=False)
+    class10_school = models.CharField(max_length=50,blank=False)
+    class10_percentage = models.DecimalField(max_digits=5, decimal_places=2,blank=False)
+    class12_board = models.CharField(max_length=10,choices=BOARD_12_CHOICES,blank=False)
+    class12_college = models.CharField(max_length=50,blank=False)
+    class12_percentage = models.DecimalField(max_digits=5, decimal_places=2,blank=False)
+    undergraduate_stream = models.CharField(max_length=50,choices=STREAM_CHOICES,blank=False)
+    undergraduate_specialization = models.CharField(max_length=50,choices=SPECIALIZATION_CHOICES,blank=False)
+    sem1_sgpi = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    sem2_sgpi = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    sem3_sgpi = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    sem4_sgpi = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    sem5_sgpi = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    sem6_sgpi = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    sem7_sgpi = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    sem8_sgpi = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    cgpa = models.DecimalField(max_digits=4, decimal_places=2,blank=True)
+    live_kt = models.BooleanField()
+    year_drop = models.BooleanField()
+    education_gap = models.BooleanField()
+    year_joined = models.PositiveSmallIntegerField()
+    expected_grad_year = models.PositiveSmallIntegerField()
+    resume = models.FileField()
+
+    class Meta:
+        verbose_name_plural = "Student"
+
