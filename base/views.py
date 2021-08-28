@@ -1,3 +1,4 @@
+from django.http import response
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, HttpResponseRedirect, get_object_or_404
 from django.contrib.auth import login,authenticate, logout
@@ -6,7 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
 from .models import Company
+from django.contrib.auth.password_validation import password_changed,validate_password
 from .forms import AddCompanyForm
+from django.core.exceptions import ValidationError
 import csv
 # Create your views here.
 
@@ -48,7 +51,7 @@ def student_cred_view(request):
         for student_uname in student_details:
             username = student_uname
             password = User.objects.make_random_password()
-            user = User.objects.create_user(username=username,password=password)
+            user = User.objects.create_user(username=username,email=username,password=password)
             pwd.append(password)
         dataset['password'] = pwd
         response = HttpResponse(content_type='text/csv')
@@ -82,3 +85,49 @@ def company_view(request):
             if form.is_valid():
 	            form.save()
             return HttpResponseRedirect(request.path_info)
+
+
+def profile_view(request):
+    if request.method == 'GET':
+        return render(request,'profile.html')
+    else:
+        if request.POST.get("profile"):
+            fn = request.POST['fn']
+            ln = request.POST['ln']
+            username = request.POST['username'] 
+            email = request.POST['email']
+            if User.objects.exclude(pk=request.user.id).filter(username=username).exists():
+                messages.error(request,"Username already exists.")
+                return redirect(request.META['HTTP_REFERER'])
+            if User.objects.exclude(pk=request.user.id).filter(email=email).exists():
+                messages.error(request,"Email already exists.")
+                return redirect(request.META['HTTP_REFERER'])
+            user=User.objects.get(pk=request.user.id)
+            user.first_name=fn
+            user.last_name=ln
+            user.email=email
+            user.username=username
+            user.save()
+        elif request.POST.get("pwd"):
+            username = request.POST['username'] 
+            old_pwd = request.POST['old']
+            new_pwd = request.POST['new']
+            confirm_pwd = request.POST['confirm']
+            user=User.objects.get(pk=request.user.id)
+            if not user.check_password(old_pwd):
+                messages.error(request,"Old password incorrect.")
+                return redirect(request.META['HTTP_REFERER'])
+            if new_pwd != confirm_pwd:
+                messages.error(request,"Passwords do not match.")
+                return redirect(request.META['HTTP_REFERER'])
+            try:
+                validate_password(new_pwd,user=user)
+            except ValidationError as err:
+                messages.error(request,err.messages[0])
+                return redirect(request.META['HTTP_REFERER'])
+            user.set_password(new_pwd)
+            user.save()
+            user = authenticate(username = username, password=new_pwd)
+            if user is not None:
+                login(request,user)
+        return HttpResponseRedirect(request.path_info)

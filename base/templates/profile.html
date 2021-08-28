@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}  
+
+{% block content %}
+<link href="{% static 'css/profile.css' %}" rel="stylesheet"> 
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+            <br>
+            <h2 class="h3 mb-4 page-title">Edit Profile</h2>
+            <div class="my-4">
+                <form name = "profileform" action = "{% url 'profile' %}" 
+                method = "POST" >{% csrf_token %}
+                    <hr class="my-4" />
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="firstname">Firstname</label>
+                            <input type="text" name ="fn" id="firstname" class="form-control" placeholder="{{request.user.first_name}}" value="{{request.user.first_name}}" />
+                        </div>
+                        <p></p>
+                        <div class="form-group col-md-6">
+                            <label for="lastname">Lastname</label>
+                            <input type="text" id="lastname" name="ln" class="form-control" placeholder="{{request.user.last_name}}" value="{{request.user.last_name}}" />
+                        </div>
+                        <p></p>
+                        <div class="form-group col-md-6">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="{{request.user.username}}" value="{{request.user.username}}"/>
+                        </div>
+                        <p></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail4">Email</label>
+                        <input type="email" class="form-control" name="email" id="inputEmail4" placeholder="{{request.user.email}}" value="{{request.user.email}}" />
+                    </div>
+                    <p></p>
+                    <button type="submit" class="btn btn-primary" name="profile" value="1">Save Changes</button>
+                    <hr class="my-4" />
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="inputPassword4">Old Password</label>
+                                <input type="password" name="old" class="form-control" id="inputPassword5" />
+                            </div>
+                            <p></p>
+                            <div class="form-group">
+                                <label for="inputPassword5">New Password</label>
+                                <input type="password" name="new" class="form-control" id="inputPassword5" />
+                            </div>
+                            <p></p>
+                            <div class="form-group">
+                                <label for="inputPassword6">Confirm Password</label>
+                                <input type="password" name="confirm" class="form-control" id="inputPassword6" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">Password requirements</p>
+                            <p class="small text-muted mb-2">To create a new password, you have to meet all of the following requirements:</p>
+                            <ul class="small text-muted pl-4 mb-0">
+                                <li>Your password can’t be too similar to your other personal information.</li>
+                                <li>Your password must contain at least 8 characters.</li>
+                                <li>Your password can’t be a commonly used password.</li>
+                                <li>Your password can’t be entirely numeric.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="pwd" value="1">Change Password</button>
+                </form>
+                {% if messages %}
+                    <p></p>
+                    {% for message in messages %}
+                    <div class="alert alert-danger">
+                        {{message}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    </div>
+{% endblock content %}
