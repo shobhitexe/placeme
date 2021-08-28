@@ -14,7 +14,7 @@ class StudentDetailsForm(forms.ModelForm):
   
     class Meta:
         model = Student
-        fields = "__all__"
+        exclude = ['user']
         labels = {
             'prn_number': 'PRN Number',
             'contact_number': 'Contact Number',
@@ -42,9 +42,5 @@ class StudentDetailsForm(forms.ModelForm):
             'year_joined' : 'Year Joined',
             'expected_grad_year' : 'Graduation Year',
         }
-
-        # def __init__(self, *args, **kwargs):
-        #     super(StudentDetailsForm, self).__init__(*args, **kwargs)
-        #     self.fields['Sem 7 SGPI'].initial = '9.8'
 
 

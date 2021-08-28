@@ -2,7 +2,7 @@ from django.db import models
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.db.models.fields.json import JSONField
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 image_storage = FileSystemStorage(
@@ -88,7 +88,7 @@ class Student(models.Model):
     year_joined = models.PositiveSmallIntegerField()
     expected_grad_year = models.PositiveSmallIntegerField()
     resume = models.FileField()
-
+    user = models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True)
     class Meta:
         verbose_name_plural = "Student"
 

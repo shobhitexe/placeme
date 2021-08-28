@@ -139,6 +139,7 @@ def academics_view(request):
         return render(request,'academics.html',{'form':studform})
     else:
         studform = StudentDetailsForm(request.POST, request.FILES)
+        studform.instance.user = request.user
         if studform.is_valid():
             studform.save()
         return HttpResponseRedirect(request.path_info)
