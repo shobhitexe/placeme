@@ -156,3 +156,7 @@ def academics_view(request):
             if studform.is_valid():
                 studform.save()
             return HttpResponseRedirect(request.path_info)
+
+
+def createform_view(request):
+    return render(request,'createform.html')

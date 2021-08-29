@@ -82,7 +82,9 @@
                             <button class="btn btn-danger" name="deletecompany" type="submit" value="{{company.id}}">Delete</button>
                         </form>
                         <br>
-                        <button class="btn btn-success">Create Form</button>
+                        <a href="{% url 'createform' %}">
+                            <button class="btn btn-success">Create Form</button>
+                        </a>
                         {% else %}
                         <button class="btn btn-success">Apply</button>
                         {% endif %}

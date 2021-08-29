@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from base.views import index_view,login_handle_view,student_cred_view,company_view,profile_view,academics_view
+from base.views import index_view,login_handle_view,student_cred_view,company_view,profile_view,academics_view,createform_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -27,6 +27,7 @@ urlpatterns = [
     path('companies/',company_view,name='company'),
     path('profile/',profile_view,name='profile'),
     path('academics/',academics_view,name='academics'),
+    path('create-form/',createform_view,name='createform'),
 ]
 
 if settings.DEBUG:
