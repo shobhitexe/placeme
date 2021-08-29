@@ -159,4 +159,9 @@ def academics_view(request):
 
 
 def createform_view(request):
-    return render(request,'createform.html')
+    if request.method == 'GET':
+        return render(request,'createform.html')
+    else:
+        print(request.POST.getlist('field_choice-1'),' hiiiiii') 
+        print(request.POST)
+        return render(request,'createform.html')

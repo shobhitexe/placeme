@@ -11,7 +11,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.css" rel="stylesheet" />
 
 <link rel="stylesheet "type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -75,25 +75,59 @@
   var field = "";
   var maxFields = 30;
 
-  $('.dynamic-field-choices').hide();
+   $('.dynamic-field-choices').hide();
 
   function totalFields() {
     return $(className).length;
   }
 
+  var content = "<input type='text' class='bss-input' onKeyDown='event.stopPropagation();' onKeyPress='addSelectInpKeyPress(this,event)' onClick='event.stopPropagation()' placeholder='Add item'> <span class='glyphicon glyphicon-plus addnewicon' onClick='addSelectItem(this,event,1);'></span>";
+     
+     var divider = $('<option/>')
+             .addClass('divider')
+             .data('divider', true);
+             
+    
+     var addoption = $('<option/>', {class: 'addItem'})
+             .data('content', content)
+         
+     $('.field_choice')
+             .append(divider)
+             .append(addoption)
+             .selectpicker();
+
+
+
+
+
+
+
+
+
   function addNewField() {
     count = totalFields() + 1;
     field = $("#dynamic-field-1").clone();
     field_type = $("#dynamic-field-type-1").clone();
-    field_type_ans = $("#dynamic-field-choices-1").clone();
+    field_type_ans = $("#dynamic-field-choices-1").clone()
+    field_type_ans.find('.bootstrap-select').replaceWith(function() { return $('select', this); });
+    field_type_ans.find("select").empty().append(divider)
+             .append(addoption)
+             .selectpicker();
     field.attr("id", "dynamic-field-" + count);
     field_type.attr("id", "dynamic-field-type-" + count);
     field_type_ans.attr("id", "dynamic-field-choices-" + count);
     field.children("label").text("Field " + count);
     field_type.children("label").text("Field Type " + count);
     field.find("input").val("");
+
+    field.find("input").attr("name","field-"+ count)
+    field_type.find("select").attr("name","field_type-"+ count)
+    field_type_ans.find("select").attr("name","field_choice-"+ count)
+    field_type_ans.find("select").attr("id","field_choice-"+ count)
+
     field_type.find("select").val("Text");
-    field_type_ans.find("select").val("");
+    // field_type_ans.find('.bootstrap-select').replaceWith(function() { return $('select', this); });
+    // field_type_ans.find('select').selectpicker();
     $(className + ":last").after($(field),$(field_type),$(field_type_ans));
     $('#dynamic-field-choices-'+count).hide();
   }
@@ -165,29 +199,11 @@
 </script>
 
 <script>
-    $(function() {
-      var content = "<input type='text' class='bss-input' onKeyDown='event.stopPropagation();' onKeyPress='addSelectInpKeyPress(this,event)' onClick='event.stopPropagation()' placeholder='Add item'> <span class='glyphicon glyphicon-plus addnewicon' onClick='addSelectItem(this,event,1);'></span>";
-     
-      var divider = $('<option/>')
-              .addClass('divider')
-              .data('divider', true);
-              
-     
-      var addoption = $('<option/>', {class: 'addItem'})
-              .data('content', content)
-          
-      $('.choice')
-              .append(divider)
-              .append(addoption)
-              .selectpicker();
-     
-    });
      
     function addSelectItem(t,ev)
     {
        ev.stopPropagation();
-       
-       var bs = $(t).closest('.dynamic-field-choices')
+       var bs = $(t).closest('.bootstrap-select')
        var txt=bs.find('.bss-input').val().replace(/[|]/g,"");
        var txt=$(t).prev().val().replace(/[|]/g,"");
        if ($.trim(txt)=='') return;
@@ -221,15 +237,16 @@
       <p class="h1">Create Form</p>
       <div class="card my-4 shadow" >
         <div class="card-body">
-          <form action="" method="post">
+          <form action="{% url 'createform' %}" method="post">
+            {% csrf_token %}
             <div class="form-row">
                 <div id="dynamic-field-1" class="form-group dynamic-field col-md-6">
                 <label for="field" class="font-weight-bold">Field 1</label>
-                <input type="text" placeholder="Enter Field Name.." id="field" class="form-control" name="field[]" required />
+                <input type="text" placeholder="Enter Field Name.." id="field" class="form-control" name="field-1" required />
                 </div>
                 <div onchange=showOptions(this) id="dynamic-field-type-1" class="form-group dynamic-field-type col-md-4">
                     <label for="field_type" class="font-weight-bold">Field Type 1</label>
-                    <select class="select form-control" id="type">
+                    <select name="field_type-1" class="select form-control" id="type">
                     <option>Text</option>
                     <option>Paragraph</option>
                     <option>Email</option>
@@ -242,7 +259,7 @@
                 </div>
                 <div id="dynamic-field-choices-1" class="form-group dynamic-field-choices col-md-2">
                     <label for="field_type_ans" class="font-weight-bold ms-2 choices">Choices :</label>
-                    <select class="choice form-control" id="type">
+                    <select multiple name="field_choice-1" class="field_choice form-control" id="field_choice-1">
                     </select>
                 </div>
             </div>
