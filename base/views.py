@@ -199,21 +199,21 @@ def todict(querydict):
             params[key] = querydict[key]
     return params
 
-def createform_view(request):
+def createform_view(request,company_id):
     if request.method == 'GET':
-        return render(request,'createform.html')
+        return render(request,'createform.html',{'company_id':company_id})
     
     elif request.POST.get("preview"):
         params = todict(request.POST)
         form,form_title,form_description = FormBuilder(params)
         params = json.dumps(params,indent=2)
-        return render(request,'preview.html',{'form':form,'title':form_title,'description':form_description,'params':params})
+        return render(request,'preview.html',{'form':form,'title':form_title,'description':form_description,'params':params,'company_id':company_id})
 
     elif request.POST.get("back"):
-        return render(request,'createform.html')
+        return render(request,'createform.html',{'company_id':company_id})
     
     elif request.POST.get("save"):
         params = request.POST.get("params")
         print(params)
-        return render(request,'createform.html')
+        return redirect('company')
     

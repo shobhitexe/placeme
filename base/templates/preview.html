@@ -19,7 +19,7 @@
             <p>{{description}}</p>
             </div>
             <div class="my-4">
-                <form name = "applicationform" action = "{% url 'createform' %}" 
+                <form name = "applicationform" action = "{% url 'createform' company_id %}" 
                 method = "POST" >{% csrf_token %}
                     <hr class="my-4" />
                     {% for field in form %}

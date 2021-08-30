@@ -233,7 +233,7 @@
       <p class="h1">Create Form</p>
       <div class="card my-4 shadow" >
         <div class="card-body">
-          <form action="{% url 'createform' %}" method="post">
+          <form action="{% url 'createform' company_id %}" method="post">
             {% csrf_token %}
             <div>
               <label for="title" class="font-weight-bold"> Form Title</label>
