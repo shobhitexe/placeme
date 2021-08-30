@@ -1,4 +1,5 @@
 from django import forms
+from django.forms.models import model_to_dict
 from django.http import response
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, HttpResponseRedirect, get_object_or_404
@@ -11,7 +12,8 @@ from .models import Company,Student
 from django.contrib.auth.password_validation import password_changed,validate_password
 from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
 from django.core.exceptions import ValidationError
-import csv
+import json
+
 # Create your views here.
 
 def index_view(request):
@@ -158,45 +160,60 @@ def academics_view(request):
                 studform.save()
             return HttpResponseRedirect(request.path_info)
 
+def FormBuilder(params):
+    keys = list(params.keys())
+    values = list(params.values())
+    form_title = params.get('title')
+    form_description = params.get('description')
+    formfields = {}
+    for i in range(len(keys)):
+        if 'type' in keys[i] :
+            form_type = values[i]
+            if form_type == 'Text':
+                formfields[values[i-1]] = forms.CharField(max_length=25)
+            elif form_type == 'Paragraph':
+                formfields[values[i-1]] = forms.CharField(widget=forms.Textarea)
+            elif form_type == 'Email':
+                formfields[values[i-1]] = forms.EmailField()
+            elif form_type == 'Integer':
+                formfields[values[i-1]] = forms.IntegerField()
+            elif form_type == 'Decimal':
+                formfields[values[i-1]] = forms.DecimalField(max_digits=6, decimal_places=2)
+            elif form_type == 'Boolean':
+                formfields[values[i-1]] = forms.BooleanField()
+            elif form_type == 'File Upload':
+                formfields[values[i-1]] = forms.FileField()
+            elif form_type == 'Choice':
+                choices = [(choice,choice) for choice in params[keys[i+1]]]
+                formfields[values[i-1]] = forms.ChoiceField(choices=choices)
+    ApplicationForm = type('ApplicationForm',(CompanyApplicationForm,),formfields)
+    form = ApplicationForm()
+    return form,form_title,form_description
+        
+def todict(querydict):
+    params = {}
+    for key in querydict.keys():
+        if len(querydict.getlist(key))>1:
+            params[key] = querydict.getlist(key)
+        else:
+            params[key] = querydict[key]
+    return params
 
 def createform_view(request):
     if request.method == 'GET':
         return render(request,'createform.html')
     
     elif request.POST.get("preview"):
-        keys = list(request.POST.keys())
-        values = list(request.POST.values())
-        form_title = request.POST.get('title')
-        form_description = request.POST.get('description')
-        formfields = {}
-        for i in range(len(keys)):
-            if 'type' in keys[i] :
-                form_type = values[i]
-                if form_type == 'Text':
-                    formfields[values[i-1]] = forms.CharField(max_length=25)
-                elif form_type == 'Paragraph':
-                    formfields[values[i-1]] = forms.CharField(widget=forms.Textarea)
-                elif form_type == 'Email':
-                    formfields[values[i-1]] = forms.EmailField()
-                elif form_type == 'Integer':
-                    formfields[values[i-1]] = forms.IntegerField()
-                elif form_type == 'Decimal':
-                    formfields[values[i-1]] = forms.DecimalField(max_digits=6, decimal_places=2)
-                elif form_type == 'Boolean':
-                    formfields[values[i-1]] = forms.BooleanField()
-                elif form_type == 'File Upload':
-                    formfields[values[i-1]] = forms.FileField()
-                elif form_type == 'Choice':
-                    choices = [(choice,choice) for choice in request.POST.getlist(keys[i+1])]
-                    formfields[values[i-1]] = forms.ChoiceField(choices=choices)
-        
-        ApplicationForm = type('ApplicationForm',(CompanyApplicationForm,),formfields)
-        form = ApplicationForm()
-        return render(request,'preview.html',{'form':form,'title':form_title,'description':form_description})
+        params = todict(request.POST)
+        form,form_title,form_description = FormBuilder(params)
+        params = json.dumps(params,indent=2)
+        return render(request,'preview.html',{'form':form,'title':form_title,'description':form_description,'params':params})
 
     elif request.POST.get("back"):
         return render(request,'createform.html')
     
     elif request.POST.get("save"):
-        pass
+        params = request.POST.get("params")
+        print(params)
+        return render(request,'createform.html')
     
