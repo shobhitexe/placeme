@@ -44,4 +44,5 @@ class StudentDetailsForm(forms.ModelForm):
             'expected_grad_year' : 'Graduation Year',
         }
 
-
+class CompanyApplicationForm(forms.Form):
+    pass

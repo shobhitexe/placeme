@@ -1,3 +1,4 @@
+from django import forms
 from django.http import response
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, HttpResponseRedirect, get_object_or_404
@@ -8,7 +9,7 @@ from django.contrib.auth.models import User
 import pandas as pd
 from .models import Company,Student
 from django.contrib.auth.password_validation import password_changed,validate_password
-from .forms import AddCompanyForm,StudentDetailsForm
+from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
 from django.core.exceptions import ValidationError
 import csv
 # Create your views here.
@@ -162,6 +163,30 @@ def createform_view(request):
     if request.method == 'GET':
         return render(request,'createform.html')
     else:
-        print(request.POST.getlist('field_choice-1'),' hiiiiii') 
-        print(request.POST)
-        return render(request,'createform.html')
+        keys = list(request.POST.keys())
+        values = list(request.POST.values())
+        formfields = {}
+        for i in range(len(keys)):
+            if 'type' in keys[i] :
+                form_type = values[i]
+                if form_type == 'Text':
+                    formfields[values[i-1]] = forms.CharField(max_length=25)
+                elif form_type == 'Paragraph':
+                    formfields[values[i-1]] = forms.CharField(widget=forms.Textarea)
+                elif form_type == 'Email':
+                    formfields[values[i-1]] = forms.EmailField()
+                elif form_type == 'Integer':
+                    formfields[values[i-1]] = forms.IntegerField()
+                elif form_type == 'Decimal':
+                    formfields[values[i-1]] = forms.DecimalField(max_digits=6, decimal_places=2)
+                elif form_type == 'Boolean':
+                    formfields[values[i-1]] = forms.BooleanField()
+                elif form_type == 'File Upload':
+                    formfields[values[i-1]] = forms.FileField()
+                elif form_type == 'Choice':
+                    choices = [(choice,choice) for choice in request.POST.getlist(keys[i+1])]
+                    formfields[values[i-1]] = forms.ChoiceField(choices=choices)
+        
+        ApplicationForm = type('ApplicationForm',(CompanyApplicationForm,),formfields)
+        form = ApplicationForm()
+        return render(request,'preview.html',{'form':form})
