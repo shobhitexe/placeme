@@ -162,9 +162,12 @@ def academics_view(request):
 def createform_view(request):
     if request.method == 'GET':
         return render(request,'createform.html')
-    else:
+    
+    elif request.POST.get("preview"):
         keys = list(request.POST.keys())
         values = list(request.POST.values())
+        form_title = request.POST.get('title')
+        form_description = request.POST.get('description')
         formfields = {}
         for i in range(len(keys)):
             if 'type' in keys[i] :
@@ -189,4 +192,11 @@ def createform_view(request):
         
         ApplicationForm = type('ApplicationForm',(CompanyApplicationForm,),formfields)
         form = ApplicationForm()
-        return render(request,'preview.html',{'form':form})
+        return render(request,'preview.html',{'form':form,'title':form_title,'description':form_description})
+
+    elif request.POST.get("back"):
+        return render(request,'createform.html')
+    
+    elif request.POST.get("save"):
+        pass
+    

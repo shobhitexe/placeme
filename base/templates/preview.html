@@ -3,11 +3,21 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <link href="{% static 'css/profile.css' %}" rel="stylesheet"> 
+<style type="text/css">
+    .desc {
+      overflow-wrap: break-word;
+    }
+</style>
+    
+          
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-10 col-xl-8 mx-auto">
             <br>
-            <h2 class="h3 mb-4 page-title">Form Title</h2>
+            <h2 class="h3 mb-4 page-title">{{title}}</h2>
+            <div class="desc">
+            <p>{{description}}</p>
+            </div>
             <div class="my-4">
                 <form name = "applicationform" action = "{% url 'createform' %}" 
                 method = "POST" >{% csrf_token %}
@@ -21,7 +31,8 @@
                         </div>
                     {% endfor %}
                     <br>
-                    <button type="submit" class="btn btn-primary" name="save" value="1">Save Changes</button>
+                    <button type="submit" class="btn btn-primary" name="save" value="1">Save Form</button>
+                    <button type="submit" class="btn btn-success ms-4" name="back" value="1">Back</button>
                 </form>
                 {% if messages %}
                     <p></p>
@@ -35,4 +46,6 @@
         </div>
     </div>
 </div>
+
+
 {% endblock content %}

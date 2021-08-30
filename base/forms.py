@@ -46,3 +46,4 @@ class StudentDetailsForm(forms.ModelForm):
 
 class CompanyApplicationForm(forms.Form):
     pass
+

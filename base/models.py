@@ -92,3 +92,12 @@ class Student(models.Model):
     class Meta:
         verbose_name_plural = "Student"
 
+
+# class CompanyApplicationForm(models.Model):
+#     company = models.ForeignKey(Company, on_delete=models.SET_NULL)
+#     placement_year = models.PositiveSmallIntegerField()
+#     created_at = models.DateTimeField(editable=False,auto_now_add=True)
+#     form_fields = models.JSONField()
+
+#     class Meta:
+#         verbose_name_plural = "Company Application Form"

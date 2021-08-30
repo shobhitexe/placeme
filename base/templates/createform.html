@@ -228,14 +228,24 @@
        }
     }  
 </script>
-            
-            
+    
     <div class="container my-4">
       <p class="h1">Create Form</p>
       <div class="card my-4 shadow" >
         <div class="card-body">
           <form action="{% url 'createform' %}" method="post">
             {% csrf_token %}
+            <div>
+              <label for="title" class="font-weight-bold"> Form Title</label>
+              <input type="text" placeholder="Enter Form Title" id="title" class="form-control" name="title" required />
+            </div>
+            <p></p>
+            <div>
+              <label for="description" class="font-weight-bold"> Form Description</label>
+              <textarea class="form-control" rows="2" placeholder="Enter Form Description" id="description" class="form-control" name="description">
+              </textarea>
+            </div>
+            <br><br>
             <div class="form-row">
                 <div id="dynamic-field-1" class="form-group dynamic-field col-md-6">
                 <label for="field" class="font-weight-bold">Field 1</label>
@@ -263,7 +273,7 @@
             <div class="clearfix mt-4">
               <button type="button" id="add-button" class="btn btn-secondary float-left text-uppercase shadow-sm"><i class="fas fa-plus fa-fw"></i> Add</button>
               <button type="button" id="remove-button" class="btn btn-secondary float-left text-uppercase ml-1" disabled="disabled"><i class="fas fa-minus fa-fw"></i> Remove</button>
-              <button type="submit" class="btn btn-primary float-right text-uppercase shadow-sm">Preview</button>
+              <button type="submit" name="preview" value="1" class="btn btn-primary float-right text-uppercase shadow-sm">Preview</button>
             </div>
           </form>
         </div>
