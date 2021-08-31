@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
-from .models import Company,Student
+from .models import Company,Student,PlacementApplication
 from django.contrib.auth.password_validation import password_changed,validate_password
 from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
 from django.core.exceptions import ValidationError
@@ -216,5 +216,8 @@ def createform_view(request,company_id):
     elif request.POST.get("save"):
         form_fields = request.POST.get("params")
         placement_year = request.POST.get('year')
+        company = Company.objects.get(id=company_id)
+        placement_application = PlacementApplication(company=company,form_fields=form_fields,placement_year=placement_year) 
+        placement_application.save()
         return redirect('company')
     
