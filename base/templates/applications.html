@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}  
+{% load crispy_forms_tags %}
+{% block content %}
+{% if applications %}
+<br>
+<div class="container-fluid">
+    <div class="row">
+        {% for application in applications %}
+            <div class="col-auto">
+                <div class="card border-primary mb-4">
+                        {% if application.0.company.logo %}
+                        <img style="height: 200px; width: 100%; display: block;" src="{{ application.0.company.logo.url }}" alt="Card image">
+                        {% else %}
+                        <img style="height: 200px; width: 100%; display: block;" src="{% static 'images/company.jpeg' %}" alt="Card image">
+                        {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ application.1.title }}</h5>
+                        <p class="card-text">{{ application.1.description }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Company Name : {{application.0.company.name}}</li>
+                        <li class="list-group-item">Placement Year : {{application.0.placement_year}}</li>
+                        <li class="list-group-item">Created On : {{application.0.created_at}}</li>
+                    </ul>
+                    <div class="card-footer text-muted">
+                    <form method = "post">
+                        {% csrf_token %}
+                        {% if request.user.is_staff %}
+                        <button type="submit" class="btn btn-success" id="responses" name="responses" value="1">Responses</button>
+                        <button type="submit" class="btn btn-primary" id="preview" name="preview" value="1">Preview</button>
+                        <button type="submit" class="btn btn-danger" id="delete" name="delete" value="{{application.0.id}}">Delete</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-success" id="apply" name="apply" value="1">Apply</button>
+                        {% endif %}
+                    </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">No Companies Added !! </h4>
+    <p>You have not yet added any companies.</p>
+</div>
+
+{% endif %}
+
+
+{% endblock content %}

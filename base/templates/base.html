@@ -43,6 +43,7 @@
                   <li><a class="dropdown-item" href="#">View Placement Rules</a></li>
                   <li><a class="dropdown-item" href="#">View Placement Results</a></li>
                   {% endif %}
+                  <li><a class="dropdown-item" href="{% url 'applications' %}">Placement Applications</a></li>
                 </ul>
               </li>
               {% if request.user.is_staff %}

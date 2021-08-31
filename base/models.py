@@ -94,7 +94,7 @@ class Student(models.Model):
 
 
 class PlacementApplication(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.SET_NULL,null=True)
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL,null=True,related_name='company')
     placement_year = models.PositiveSmallIntegerField()
     created_at = models.DateTimeField(editable=False,auto_now_add=True)
     form_fields = models.TextField()

@@ -221,3 +221,23 @@ def createform_view(request,company_id):
         placement_application.save()
         return redirect('company')
     
+
+def placement_applications_view(request):
+    if request.method == 'GET':
+        applications = PlacementApplication.objects.all()
+        if not applications.exists():
+            applications = None 
+        fields = []
+        for application in applications:
+            form_fields = json.loads(application.form_fields)
+            fields.append(form_fields)
+        applications = zip(applications,fields)
+        return render(request,'applications.html',{'applications':applications})
+
+    elif  request.method == 'POST':
+        if request.POST.get("delete"):
+            id = request.POST.get("delete")
+            instance = PlacementApplication.objects.get(id=id)
+            instance.delete()
+            return redirect('applications')
+
