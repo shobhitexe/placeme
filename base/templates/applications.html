@@ -28,7 +28,7 @@
                         {% csrf_token %}
                         {% if request.user.is_staff %}
                         <button type="submit" class="btn btn-success" id="responses" name="responses" value="1">Responses</button>
-                        <button type="submit" class="btn btn-primary" id="preview" name="preview" value="1">Preview</button>
+                        <button type="submit" class="btn btn-primary" id="preview" name="preview" value="{{application.1}}">Preview</button>
                         <button type="submit" class="btn btn-danger" id="delete" name="delete" value="{{application.0.id}}">Delete</button>
                         {% else %}
                         <button type="submit" class="btn btn-success" id="apply" name="apply" value="1">Apply</button>

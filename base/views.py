@@ -241,3 +241,15 @@ def placement_applications_view(request):
             instance.delete()
             return redirect('applications')
 
+        if request.POST.get("preview"):
+            params = request.POST.get("preview")
+            params = params.replace("'",'"')
+            params = json.loads(params)
+            form,form_title,form_description = FormBuilder(params)
+            return render(request,'preview_after.html',{'form':form,'title':form_title,'description':form_description})
+
+        if request.POST.get("back"):
+            return redirect('applications')
+        
+        if request.POST.get("responses"):
+            return redirect('applications')
