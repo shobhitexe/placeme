@@ -261,7 +261,7 @@ def placement_applications_view(request):
 
         if request.POST.get("filled"):
             responses = todict(request.POST)
-            print(request.FILES)
+            files = request.FILES
             del responses['csrfmiddlewaretoken']
             del responses['filled']
             print(responses)
