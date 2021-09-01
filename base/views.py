@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
-from .models import Company,Student,PlacementApplication
+from .models import Company, PlacementApplicationResponse,Student,PlacementApplication
 from django.contrib.auth.password_validation import password_changed,validate_password
 from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
 from django.core.exceptions import ValidationError
@@ -253,17 +253,36 @@ def placement_applications_view(request):
             return redirect('applications')
 
         if request.POST.get("apply"):
+            form_id = request.POST.get("id")
+            placement_application = PlacementApplication.objects.get(id=form_id)
+            student = Student.objects.get(user=request.user)
+            try:
+                placement_application_response = PlacementApplicationResponse.objects.get(student=student,placement_application=placement_application)
+                responses = json.loads(placement_application_response.responses)
+            except:
+                responses = None
             params = request.POST.get("apply")
             params = params.replace("'",'"')
             params = json.loads(params)
             form,form_title,form_description = FormBuilder(params,True)
-            return render(request,'fillform.html',{'form':form,'title':form_title,'description':form_description})
+            print(form.fields)
+            print(responses)
+            return render(request,'fillform.html',{'form':form,'title':form_title,'description':form_description,'form_id':form_id})
 
         if request.POST.get("filled"):
+            form_id = request.POST.get('filled')
             responses = todict(request.POST)
             files = request.FILES
             del responses['csrfmiddlewaretoken']
             del responses['filled']
+            responses = json.dumps(responses)
+            student = Student.objects.get(user=request.user)
+            placement_application = PlacementApplication.objects.get(id=form_id)
+            placement_application_response = PlacementApplicationResponse(
+            student=student,responses=responses,placement_application=placement_application) 
+            placement_application_response.save()
             return redirect('applications')
+
+
 
         

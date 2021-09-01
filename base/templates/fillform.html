@@ -34,7 +34,7 @@
                     {% if request.user.is_staff %}
                         <button type="submit" class="btn btn-success ms-4" name="back" value="1">Back</button>
                     {% else %}
-                        <button type="submit" class="btn btn-success ms-4" name="filled" value="1">Submit</button>
+                        <button type="submit" class="btn btn-success ms-4" name="filled" value="{{form_id}}">Submit</button>
                     {% endif %}
                 </form>
                 {% if messages %}

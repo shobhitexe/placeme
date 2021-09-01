@@ -106,7 +106,7 @@ class PlacementApplication(models.Model):
 class PlacementApplicationResponse(models.Model):
     student = models.ForeignKey(Student, on_delete=models.SET_NULL,null=True,related_name='student')
     placement_application = models.ForeignKey(PlacementApplication, on_delete=models.CASCADE,related_name='placement_application')
-    responsed_at = models.DateTimeField(editable=False,auto_now=True)
+    responded_at = models.DateTimeField(editable=False,auto_now=True)
     responses = models.TextField()
 
     class Meta:
