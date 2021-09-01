@@ -141,7 +141,7 @@ def academics_view(request):
         studform = StudentDetailsForm()
         try:
             student = Student.objects.get(user_id=request.user.id)
-            for field,attr in zip(studform.fields,student._meta.get_fields()):
+            for field,attr in zip(studform.fields,student._meta.get_fields()[1:]):
                 studform[field].initial = getattr(student,attr.name)
             return render(request,'academics.html',{'form':studform})
         except:  
@@ -264,5 +264,6 @@ def placement_applications_view(request):
             files = request.FILES
             del responses['csrfmiddlewaretoken']
             del responses['filled']
-            print(responses)
             return redirect('applications')
+
+        
