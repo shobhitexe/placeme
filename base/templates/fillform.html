@@ -20,7 +20,7 @@
             </div>
             <div class="my-4">
                 <form name = "applicationform" action = "{% url 'applications' %}" 
-                method = "POST" >{% csrf_token %}
+                method = "POST" enctype="multipart/form-data">{% csrf_token %}
                     <hr class="my-4" />
                     {% for field in form %}
                         <div class="form-row">
@@ -31,7 +31,11 @@
                         </div>
                     {% endfor %}
                     <br>
-                    <button type="submit" class="btn btn-success ms-4" name="back" value="1">Back</button>
+                    {% if request.user.is_staff %}
+                        <button type="submit" class="btn btn-success ms-4" name="back" value="1">Back</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success ms-4" name="filled" value="1">Submit</button>
+                    {% endif %}
                 </form>
                 {% if messages %}
                     <p></p>

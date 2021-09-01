@@ -236,24 +236,23 @@
           <form action="{% url 'createform' company_id %}" method="post">
             {% csrf_token %}
             <div>
-              <label for="title" class="font-weight-bold"> Form Title</label>
+              <label for="title" class="font-weight-bold required"> Form Title</label>
               <input type="text" placeholder="Enter Form Title" id="title" class="form-control" name="title" required />
             </div>
             <p></p>
             <div>
               <label for="description" class="font-weight-bold"> Form Description</label>
-              <textarea class="form-control" rows="2" placeholder="Enter Form Description" id="description" class="form-control" name="description">
-              </textarea>
+              <textarea class="form-control" rows="2" placeholder="Enter Form Description" id="description" class="form-control" name="description"></textarea>
             </div>
             <p></p>
             <div>
-              <label for="year" class="font-weight-bold"> Placement Year</label>
+              <label for="year" class="font-weight-bold required"> Placement Year</label>
               <input type="number" placeholder="Enter Placement Year" id="year" class="form-control" name="year" required />
             </div>
             <br><br>
             <div class="form-row">
                 <div id="dynamic-field-1" class="form-group dynamic-field col-md-6">
-                <label for="field" class="font-weight-bold">Field 1</label>
+                <label for="field" class="font-weight-bold required">Field 1</label>
                 <input type="text" placeholder="Enter Field Name.." id="field" class="form-control" name="field-1" required />
                 </div>
                 <div onchange=showOptions(this) id="dynamic-field-type-1" class="form-group dynamic-field-type col-md-4">
@@ -271,8 +270,7 @@
                 </div>
                 <div id="dynamic-field-choices-1" class="form-group dynamic-field-choices col-md-2">
                     <label for="field_type_ans" class="font-weight-bold ms-2 choices">Choices :</label>
-                    <select multiple name="field_choice-1" class="field_choice form-control" id="field_choice-1">
-                    </select>
+                    <select multiple name="field_choice-1" class="field_choice form-control" id="field_choice-1"></select>
                 </div>
             </div>
             <div class="clearfix mt-4">
@@ -285,4 +283,10 @@
       </div>
     </div>
 
+    <style>
+      .required:after {
+        content:" *";
+        color: red;
+      }
+    </style>
 {% endblock content %}

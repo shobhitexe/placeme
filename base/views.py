@@ -160,7 +160,7 @@ def academics_view(request):
                 studform.save()
             return HttpResponseRedirect(request.path_info)
 
-def FormBuilder(params):
+def FormBuilder(params,required):
     keys = list(params.keys())
     values = list(params.values())
     form_title = params.get('title')
@@ -170,22 +170,20 @@ def FormBuilder(params):
         if 'type' in keys[i] :
             form_type = values[i]
             if form_type == 'Text':
-                formfields[values[i-1]] = forms.CharField(max_length=25)
+                formfields[values[i-1]] = forms.CharField(max_length=25,required=required)
             elif form_type == 'Paragraph':
-                formfields[values[i-1]] = forms.CharField(widget=forms.Textarea)
+                formfields[values[i-1]] = forms.CharField(widget=forms.Textarea,required=required)
             elif form_type == 'Email':
-                formfields[values[i-1]] = forms.EmailField()
+                formfields[values[i-1]] = forms.EmailField(required=required)
             elif form_type == 'Integer':
-                formfields[values[i-1]] = forms.IntegerField()
+                formfields[values[i-1]] = forms.IntegerField(required=required)
             elif form_type == 'Decimal':
-                formfields[values[i-1]] = forms.DecimalField(max_digits=6, decimal_places=2)
-            elif form_type == 'Boolean':
-                formfields[values[i-1]] = forms.BooleanField()
+                formfields[values[i-1]] = forms.DecimalField(max_digits=6, decimal_places=2,required=required)
             elif form_type == 'File Upload':
-                formfields[values[i-1]] = forms.FileField()
+                formfields[values[i-1]] = forms.FileField(required=required)
             elif form_type == 'Choice':
                 choices = [(choice,choice) for choice in params[keys[i+1]]]
-                formfields[values[i-1]] = forms.ChoiceField(choices=choices)
+                formfields[values[i-1]] = forms.ChoiceField(choices=choices,required=required)
     ApplicationForm = type('ApplicationForm',(CompanyApplicationForm,),formfields)
     form = ApplicationForm()
     return form,form_title,form_description
@@ -206,7 +204,7 @@ def createform_view(request,company_id):
     elif request.POST.get("preview"):
         placement_year = request.POST.get('year')
         params = todict(request.POST)
-        form,form_title,form_description = FormBuilder(params)
+        form,form_title,form_description = FormBuilder(params,False)
         params = json.dumps(params,indent=2)
         return render(request,'preview.html',{'form':form,'title':form_title,'description':form_description,'params':params,'company_id':company_id,'placement_year':placement_year})
 
@@ -245,11 +243,26 @@ def placement_applications_view(request):
             params = request.POST.get("preview")
             params = params.replace("'",'"')
             params = json.loads(params)
-            form,form_title,form_description = FormBuilder(params)
-            return render(request,'preview_after.html',{'form':form,'title':form_title,'description':form_description})
+            form,form_title,form_description = FormBuilder(params,False)
+            return render(request,'fillform.html',{'form':form,'title':form_title,'description':form_description})
 
         if request.POST.get("back"):
             return redirect('applications')
         
         if request.POST.get("responses"):
+            return redirect('applications')
+
+        if request.POST.get("apply"):
+            params = request.POST.get("apply")
+            params = params.replace("'",'"')
+            params = json.loads(params)
+            form,form_title,form_description = FormBuilder(params,True)
+            return render(request,'fillform.html',{'form':form,'title':form_title,'description':form_description})
+
+        if request.POST.get("filled"):
+            responses = todict(request.POST)
+            print(request.FILES)
+            del responses['csrfmiddlewaretoken']
+            del responses['filled']
+            print(responses)
             return redirect('applications')

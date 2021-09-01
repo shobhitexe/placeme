@@ -101,11 +101,13 @@
 </div>
 {% endif %}
 
+{% if request.user.is_staff %}
 <div class="form-group" style="margin-top: 12%; float:right; position: relative; ">
     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
       <button class="btn btn-success btn-circle btn-xl" id="add" data-bs-toggle="modal" data-bs-target="#AddCompanyModal">Add</button>
     </div>
 </div>
+{% endif %}
 
 <div class="modal fade" id="AddCompanyModal">
     <div class="modal-dialog modal-dialog-centered">
