@@ -241,13 +241,24 @@ def clean_responses(responses,fields):
 def placement_applications_view(request):
     if request.method == 'GET':
         applications = PlacementApplication.objects.all()
+        if not request.user.is_staff:
+            student = Student.objects.get(user=request.user)
         if not applications.exists():
             applications = None 
-        fields = []
-        for application in applications:
-            form_fields = json.loads(application.form_fields)
-            fields.append(form_fields)
-        applications = zip(applications,fields)
+        else:
+            fields = []
+            responses = []
+            for application in applications:
+                if not request.user.is_staff:
+                    try:
+                        responses.append(PlacementApplicationResponse.objects.get(student=student,placement_application=application))
+                    except:
+                        responses.append(None)
+                else:
+                    responses.append('admin')
+                form_fields = json.loads(application.form_fields)
+                fields.append(form_fields)
+            applications = zip(applications,fields,responses)
         return render(request,'applications.html',{'applications':applications})
 
     elif  request.method == 'POST':

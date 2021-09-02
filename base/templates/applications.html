@@ -31,7 +31,8 @@
                         <button type="submit" class="btn btn-primary" id="preview" name="preview" value="{{application.1}}">Preview</button>
                         <button type="submit" class="btn btn-danger" id="delete" name="delete" value="{{application.0.id}}">Delete</button>
                         {% else %}
-                        <button type="submit" class="btn btn-success" id="apply" name="apply" value="{{application.1}}">Apply</button>
+                        <button type="submit" class="btn btn-success" id="apply" name="apply" value="{{application.1}}">
+                        {%if application.2 %}Edit Response{% else %}Apply{% endif %}</button>
                         <input type="text" name="id" hidden value="{{application.0.id}}"/>
                         {% endif %}
                     </form>
