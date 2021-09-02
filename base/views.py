@@ -325,6 +325,24 @@ def placement_applications_view(request):
             try:
                 placement_application_response = get_object_or_404(PlacementApplicationResponse,placement_application=placement_application,student=student)
                 placement_application_response.responses = responses
+
+                try:
+                    existing_files = PlacementApplicationResponseFiles.objects.filter(response=placement_application_response)
+                    if existing_files:
+                        for response_file in existing_files:
+                            response_file.file_uploaded = files[response_file.label.lower()]
+                            response_files.append(response_file) 
+                    
+                    else:
+                        if files:
+                            for file in files:
+                                response_file = PlacementApplicationResponseFiles(response=placement_application_response,label=file,file_uploaded=files[file])
+                                response_files.append(response_file)
+                
+                except:
+                    pass
+                            
+
             except:
                 placement_application_response = PlacementApplicationResponse(
                 student=student,responses=responses,placement_application=placement_application) 
