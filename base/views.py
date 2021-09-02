@@ -226,9 +226,12 @@ def clean_responses(responses,fields):
     kv1 = list(fields.values())
     kv2 = list(responses.values())
     for i in range(len(kl1)):
-        if kl1[i] != kl2[i]:
+        if i<len(kl2) and kl1[i] != kl2[i]:
             kl2.insert(i,kl1[i])
             kv2.insert(i,None)
+        elif i>=len(kl2):
+            kl2.append(kl1[i])
+            kv2.append(None)
     responses = {}
     for i in range(len(kl2)):
         responses[kl2[i]] = kv2[i]
@@ -276,9 +279,10 @@ def placement_applications_view(request):
             params = json.loads(params)
             form,form_title,form_description = FormBuilder(params,True)
             try:
-                placement_application_response = PlacementApplicationResponse.objects.get(student=student,placement_application=placement_application)
+                placement_application_response = get_object_or_404(PlacementApplicationResponse,placement_application=placement_application,student=student)
                 responses = json.loads(placement_application_response.responses)
                 responses = clean_responses(responses,form.fields)
+
                 form.set_initial(responses)
             except:
                 responses = None
