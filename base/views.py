@@ -218,6 +218,21 @@ def createform_view(request,company_id):
         placement_application = PlacementApplication(company=company,form_fields=form_fields,placement_year=placement_year) 
         placement_application.save()
         return redirect('company')
+
+
+def clean_responses(responses,fields):
+    kl1 = list(fields)
+    kl2 = list(responses)
+    kv1 = list(fields.values())
+    kv2 = list(responses.values())
+    for i in range(len(kl1)):
+        if kl1[i] != kl2[i]:
+            kl2.insert(i,kl1[i])
+            kv2.insert(i,None)
+    responses = {}
+    for i in range(len(kl2)):
+        responses[kl2[i]] = kv2[i]
+    return responses
     
 
 def placement_applications_view(request):
@@ -256,17 +271,17 @@ def placement_applications_view(request):
             form_id = request.POST.get("id")
             placement_application = PlacementApplication.objects.get(id=form_id)
             student = Student.objects.get(user=request.user)
-            try:
-                placement_application_response = PlacementApplicationResponse.objects.get(student=student,placement_application=placement_application)
-                responses = json.loads(placement_application_response.responses)
-            except:
-                responses = None
             params = request.POST.get("apply")
             params = params.replace("'",'"')
             params = json.loads(params)
             form,form_title,form_description = FormBuilder(params,True)
-            print(form.fields)
-            print(responses)
+            try:
+                placement_application_response = PlacementApplicationResponse.objects.get(student=student,placement_application=placement_application)
+                responses = json.loads(placement_application_response.responses)
+                responses = clean_responses(responses,form.fields)
+                form.set_initial(responses)
+            except:
+                responses = None
             return render(request,'fillform.html',{'form':form,'title':form_title,'description':form_description,'form_id':form_id})
 
         if request.POST.get("filled"):
@@ -278,8 +293,12 @@ def placement_applications_view(request):
             responses = json.dumps(responses)
             student = Student.objects.get(user=request.user)
             placement_application = PlacementApplication.objects.get(id=form_id)
-            placement_application_response = PlacementApplicationResponse(
-            student=student,responses=responses,placement_application=placement_application) 
+            try:
+                placement_application_response = get_object_or_404(PlacementApplicationResponse,placement_application=placement_application,student=student)
+                placement_application_response.responses = responses
+            except:
+                placement_application_response = PlacementApplicationResponse(
+                student=student,responses=responses,placement_application=placement_application) 
             placement_application_response.save()
             return redirect('applications')
 

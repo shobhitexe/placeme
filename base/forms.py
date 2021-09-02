@@ -47,3 +47,6 @@ class StudentDetailsForm(forms.ModelForm):
 class CompanyApplicationForm(forms.Form):
     pass
 
+    def set_initial(self,responses,*args, **kwargs):
+        for key in responses.keys():
+            self.fields[key].initial = responses[key]
