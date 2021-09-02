@@ -327,11 +327,12 @@ def placement_applications_view(request):
                 placement_application_response.responses = responses
 
                 try:
-                    existing_files = PlacementApplicationResponseFiles.objects.filter(response=placement_application_response)
-                    if existing_files:
-                        for response_file in existing_files:
-                            response_file.file_uploaded = files[response_file.label.lower()]
-                            response_files.append(response_file) 
+                    if files:
+                        for file in files:
+                            existing_files = PlacementApplicationResponseFiles.objects.filter(response=placement_application_response,label=file)
+                            for existing_file in existing_files:
+                                existing_file.file_uploaded = files[file]
+                                response_files.append(existing_file) 
                     
                     else:
                         if files:
