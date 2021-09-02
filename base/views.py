@@ -1,5 +1,4 @@
 from django import forms
-from django.forms.models import model_to_dict
 from django.http import response
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, HttpResponseRedirect, get_object_or_404
@@ -8,7 +7,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
-from .models import Company, PlacementApplicationResponse,Student,PlacementApplication
+from .models import Company, PlacementApplicationResponse,Student,PlacementApplication,PlacementApplicationResponseFiles
 from django.contrib.auth.password_validation import password_changed,validate_password
 from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
 from django.core.exceptions import ValidationError
@@ -238,6 +237,11 @@ def clean_responses(responses,fields):
     return responses
     
 
+def addfiles(responses,response_files):
+    for response_file in response_files:
+        responses[response_file.label] = response_file.file_uploaded
+    return responses
+
 def placement_applications_view(request):
     if request.method == 'GET':
         applications = PlacementApplication.objects.all()
@@ -288,15 +292,24 @@ def placement_applications_view(request):
             params = request.POST.get("apply")
             params = params.replace("'",'"')
             params = json.loads(params)
+            placement_application_response = None
             form,form_title,form_description = FormBuilder(params,True)
             try:
                 placement_application_response = get_object_or_404(PlacementApplicationResponse,placement_application=placement_application,student=student)
                 responses = json.loads(placement_application_response.responses)
                 responses = clean_responses(responses,form.fields)
-
-                form.set_initial(responses)
             except:
                 responses = None
+
+            try:
+                response_files = PlacementApplicationResponseFiles.objects.filter(response=placement_application_response)
+                if response_files:
+                    responses = addfiles(responses,response_files)
+            except:
+                response_files = None
+
+            if responses:
+                form.set_initial(responses)
             return render(request,'fillform.html',{'form':form,'title':form_title,'description':form_description,'form_id':form_id})
 
         if request.POST.get("filled"):
@@ -308,13 +321,24 @@ def placement_applications_view(request):
             responses = json.dumps(responses)
             student = Student.objects.get(user=request.user)
             placement_application = PlacementApplication.objects.get(id=form_id)
+            response_files = []
             try:
                 placement_application_response = get_object_or_404(PlacementApplicationResponse,placement_application=placement_application,student=student)
                 placement_application_response.responses = responses
             except:
                 placement_application_response = PlacementApplicationResponse(
                 student=student,responses=responses,placement_application=placement_application) 
+
+                if files:
+                    for file in files:
+                        response_file = PlacementApplicationResponseFiles(response=placement_application_response,label=file,file_uploaded=files[file])
+                        response_files.append(response_file)
+                
             placement_application_response.save()
+            if response_files:
+                for response_file in response_files:
+                    response_file.save()
+
             return redirect('applications')
 
 

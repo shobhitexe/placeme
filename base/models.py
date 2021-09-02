@@ -113,14 +113,13 @@ class PlacementApplicationResponse(models.Model):
         verbose_name_plural = "Placement Application Response"
 
 
-# class PlacementApplicationResponseFiles(models.Model):
-#     response_id
-#     label 
-#     file_uploaded
-    
+class PlacementApplicationResponseFiles(models.Model):
+    response = models.ForeignKey(PlacementApplicationResponse, on_delete=models.CASCADE,related_name='placement_application_response')
+    label = models.CharField(max_length=50,blank=False,null=False)
+    file_uploaded = models.FileField()
 
-#     class Meta:
-#         verbose_name_plural = "Placement Application Response Files"
+    class Meta:
+        verbose_name_plural = "Placement Application Response Files"
 
 
 
