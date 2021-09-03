@@ -75,15 +75,12 @@
                              $(".modal-body #sub").val( id );
                             });
                           </script>
-
                         <form name = "deletecompany" action = "{% url 'company' %}" 
                         method = "POST" >{% csrf_token %}
-                        <br>
-                            <button class="btn btn-danger" name="deletecompany" type="submit" value="{{company.id}}">Delete</button>
+                            <button class="btn btn-danger mt-2" name="deletecompany" type="submit" value="{{company.id}}">Delete</button>
                         </form>
-                        <br>
                         <a href="{% url 'createform' company.id %}">
-                            <button class="btn btn-success" name="createappform" type="submit" value="{{company.id}}">Create Form</button>
+                            <button class="btn btn-success mt-2" name="createappform" type="submit" value="{{company.id}}">Create Form</button>
                         </a>
                         {% else %}
                         <button class="btn btn-success">Apply</button>

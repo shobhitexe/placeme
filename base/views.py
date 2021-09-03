@@ -12,6 +12,7 @@ from django.contrib.auth.password_validation import password_changed,validate_pa
 from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
 from django.core.exceptions import ValidationError
 import json
+from django.urls import reverse
 
 # Create your views here.
 
@@ -243,6 +244,34 @@ def addfiles(responses,response_files):
         responses[response_file.label] = response_file.file_uploaded
     return responses
 
+def prepare_responses(params,responses):
+    columns=[]
+    params = json.loads(params)
+    for key in params.keys():
+        if 'field-' in key:
+            columns.append(params[key])
+    dataset = pd.DataFrame(columns=columns)
+    for response in responses:
+        response = json.loads(response.responses)
+        dataset = dataset.append(response,ignore_index=True)
+    return dataset
+
+def prepare_criteria(params,dataset):
+    params = json.loads(params)
+    criteria = {}
+    keys = list(params.keys())
+    for i in range(len(keys)):
+        key = keys[i]
+        if 'type' in key:
+            if params[key] == 'Integer' or params[key] == 'Decimal':
+                col = dataset[params[keys[i-1]]]
+                criteria[params[keys[i-1]]] = [params[key],col.min(),col.max()]
+            elif params[key] == 'Choice':
+                criteria[params[keys[i-1]]] = [(params[key])] + params[keys[i+1]]
+    return criteria
+            
+
+
 def placement_applications_view(request):
     if request.method == 'GET':
         applications = PlacementApplication.objects.all()
@@ -284,7 +313,13 @@ def placement_applications_view(request):
             return redirect('applications')
         
         if request.POST.get("responses"):
-            return redirect('applications')
+            form_id = request.POST.get('responses')
+            form = PlacementApplication.objects.get(id=form_id)
+            params = form.form_fields
+            responses = PlacementApplicationResponse.objects.filter(placement_application=form)
+            result = prepare_responses(params,responses)
+            criterias = prepare_criteria(params,result)
+            return render(request,'responses.html',{'criterias':criterias,'form_id':form_id})
 
         if request.POST.get("apply"):
             form_id = request.POST.get("id")
@@ -360,7 +395,39 @@ def placement_applications_view(request):
                     response_file.save()
 
             return redirect('applications')
-
-
-
         
+        if request.POST.get("eligible") or request.POST.get("ineligible"):
+            criteria = todict(request.POST)
+            if request.POST.get("eligible"):
+                form_id = request.POST.get('eligible')
+            else:
+                form_id = request.POST.get('ineligible')
+            form = PlacementApplication.objects.get(id=form_id)
+            params = form.form_fields
+            responses = PlacementApplicationResponse.objects.filter(placement_application=form)
+            dataset = prepare_responses(params,responses)
+            original = dataset
+            for key in criteria:
+                if key.endswith('-min-'):
+                    col = key.replace('-min-','')
+                    dataset = dataset[dataset[col]>=criteria[key]]
+                elif key.endswith('-max-'):
+                    col = key.replace('-max-','')
+                    dataset = dataset[dataset[col]<=criteria[key]]
+                elif key.endswith('-choice-'):
+                    col = key.replace('-choice-','')
+                    if isinstance(criteria[key],str):
+                        criteria[key] = [criteria[key]]
+                    dataset = dataset[dataset[col].isin(criteria[key])]
+            response = HttpResponse(content_type='text/csv')
+            if request.POST.get("eligible"):
+                response['Content-Disposition'] = 'attachment; filename=eligible.csv'
+                dataset.to_csv(path_or_buf=response)  # with other applicable parameters
+            else:
+                response['Content-Disposition'] = 'attachment; filename=ineligible.csv'
+                original = original[~original.isin(dataset)].dropna(how = 'all')
+                ineligible = original
+                ineligible.to_csv(path_or_buf=response)
+            return response
+
+

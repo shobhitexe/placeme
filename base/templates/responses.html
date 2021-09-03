@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}  
+{% load crispy_forms_tags %}
+{% block content %}
+<section class="vh-100">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-12 col-xl-11">
+          <div class="card text-black" style="border-radius: 25px;">
+            <div class="card-body p-md-5">
+              <div class="row justify-content-center">
+                <div class="col-md-4 col-lg-8 order-2 order-lg-1">
+  
+                  <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Responses</p>
+  
+                  
+                    <h4>Criteria:</h4>
+                    <p></p>
+                    <form action="{% url 'applications' %}"  method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for key,value in criterias.items %}
+                        {% ifequal value.0 "Integer" %}
+                        <ul>
+                        <li>
+                            <input name = "{{key}}-min-" type="number" value="{{value.1}}" placeholder="Enter min criteria" />
+                            <label name = "{{key}}" for="{{key}}" class="font-weight-bold"><b><= {{key}} <=</b></label>
+                            <input name = "{{key}}-max-" type="number" value="{{value.2}}" placeholder="Enter max criteria" />
+                        </li>
+                        <p></p>
+                        {% endifequal %}
+                        {% ifequal value.0 "Decimal" %}
+                        <li>
+                            <input name = "{{key}}-min-" type="number" value="{{value.1}}" placeholder="Enter min criteria" step="any"/>
+                            <label name = "{{key}}" for="{{key}}" class="font-weight-bold"><b><= {{key}} <=</b></label>
+                            <input name = "{{key}}-max-" type="number" value="{{value.2}}" placeholder="Enter max criteria" step="any" />
+                        </li>
+                        <p></p>
+                        {% endifequal %}
+                        {% ifequal value.0 "Choice" %}
+                        <li>
+                            <label for="{{key}}" class="font-weight-bold"><b>{{key}} :</b></label>
+                            <p></p>
+                            <select multiple name = "{{key}}-choice-" class="select form-control" id="{{key}}">
+                            {% for option in value %}
+                                {% ifnotequal forloop.counter0 0 %}
+                                <option selected="selected">{{option}}</option>
+                                {% endifnotequal %}
+                            {% endfor %}
+                            </select>
+                        </li>
+                        <p></p>
+                        {% endifequal %}
+                    {% endfor %}
+                    <div>
+                      <button type="submit" class="btn btn-success btn-md me-2" name="eligible" value="{{form_id}}">Eligible Students List</button>
+                      <button type="submit" class="btn btn-danger btn-md ms-2 me-2" name="ineligible" value="{{form_id}}">Ineligible Students List</button>
+                      <button type="submit" class="btn btn-primary btn-md ms-2" name="back" value="1">Back</button>
+                    </div>
+                    </form>
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-danger">
+                            {{message}}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock content %}
