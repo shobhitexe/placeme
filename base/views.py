@@ -239,6 +239,33 @@ def clean_responses(responses,fields):
         responses[kl2[i]] = kv2[i]
     return responses
     
+def ResponsePreviewer(params,required,disabled):
+    keys = list(params.keys())
+    values = list(params.values())
+    form_title = params.get('title')
+    form_description = params.get('description')
+    formfields = {}
+    for i in range(len(keys)):
+        if 'type' in keys[i] :
+            form_type = values[i]
+            if form_type == 'Text':
+                formfields[values[i-1]] = forms.CharField(max_length=25,required=required,disabled=disabled)
+            elif form_type == 'Paragraph':
+                formfields[values[i-1]] = forms.CharField(widget=forms.Textarea,required=required,disabled=disabled)
+            elif form_type == 'Email':
+                formfields[values[i-1]] = forms.EmailField(required=required,disabled=disabled)
+            elif form_type == 'Integer':
+                formfields[values[i-1]] = forms.IntegerField(required=required,disabled=disabled)
+            elif form_type == 'Decimal':
+                formfields[values[i-1]] = forms.DecimalField(max_digits=6, decimal_places=2,required=required,disabled=disabled)
+            elif form_type == 'File Upload':
+                formfields[values[i-1]] = forms.FileField(required=required,disabled=disabled)
+            elif form_type == 'Choice':
+                choices = [(choice,choice) for choice in params[keys[i+1]]]
+                formfields[values[i-1]] = forms.ChoiceField(choices=choices,required=required,disabled=disabled)
+    ApplicationForm = type('ApplicationForm',(CompanyApplicationForm,),formfields)
+    form = ApplicationForm()
+    return form,form_title,form_description
 
 def addfiles(responses,response_files):
     for response_file in response_files:
@@ -464,6 +491,35 @@ def placement_applications_view(request):
                 pass
             print(files_uploaded)
             return render(request,'files.html',{'files':files_uploaded})
+        
+
+        if request.POST.get("response-indiv"):
+            roll_no = request.POST.get('response-indiv')
+            form_id = request.POST.get('form_id')
+            placement_application = PlacementApplication.objects.get(id=form_id)
+            student = Student.objects.get(roll_number=roll_no)
+            params = placement_application.form_fields
+            params = params.replace("'",'"')
+            params = json.loads(params)
+            placement_application_response = None
+            form,form_title,form_description = ResponsePreviewer(params,False,True)
+            try:
+                placement_application_response = get_object_or_404(PlacementApplicationResponse,placement_application=placement_application,student=student)
+                responses = json.loads(placement_application_response.responses)
+                responses = clean_responses(responses,form.fields)
+            except:
+                responses = None
+
+            try:
+                response_files = PlacementApplicationResponseFiles.objects.filter(response=placement_application_response)
+                if response_files:
+                    responses = addfiles(responses,response_files)
+            except:
+                response_files = None
+
+            if responses:
+                form.set_initial(responses)
+            return render(request,'fillform.html',{'form':form,'title':form_title,'description':form_description,'form_id':form_id})
 
 
 
