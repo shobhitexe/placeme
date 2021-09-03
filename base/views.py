@@ -13,6 +13,7 @@ from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
 from django.core.exceptions import ValidationError
 import json
 from django.urls import reverse
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 # Create your views here.
 
@@ -251,9 +252,12 @@ def prepare_responses(params,responses):
         if 'field-' in key:
             columns.append(params[key])
     dataset = pd.DataFrame(columns=columns)
+    rnos = []
     for response in responses:
+        rnos.append(response.student.roll_number)
         response = json.loads(response.responses)
         dataset = dataset.append(response,ignore_index=True)
+    dataset.insert(0,'Roll Number',rnos)
     return dataset
 
 def prepare_criteria(params,dataset):
@@ -429,5 +433,37 @@ def placement_applications_view(request):
                 ineligible = original
                 ineligible.to_csv(path_or_buf=response)
             return response
+
+        if request.POST.get("indiv"):
+            form_id = request.POST.get('indiv')
+            form = PlacementApplication.objects.get(id=form_id)
+            responses = PlacementApplicationResponse.objects.filter(placement_application=form)
+            files_uploaded = {}
+            for response in responses:
+                if response.student.roll_number not in files_uploaded.keys():
+                    files_uploaded[response.student.roll_number] = {}
+                try:
+                    files = PlacementApplicationResponseFiles.objects.get(response=response)
+                    files_uploaded[response.student.roll_number][files.label] = files.file_uploaded
+                except:
+                    pass
+            return render(request,'indiv-responses.html',{'files':files_uploaded,'form_id':form_id})
+        
+        if request.POST.get("files-indiv"):
+            roll_no = request.POST.get('files-indiv')
+            form_id = request.POST.get('form_id')
+            form = PlacementApplication.objects.get(id=form_id)
+            student = Student.objects.get(roll_number=roll_no)
+            response = PlacementApplicationResponse.objects.get(placement_application=form,student=student)
+            files_uploaded = {}
+            try:
+                files = PlacementApplicationResponseFiles.objects.filter(response=response)
+                for file in files:
+                    files_uploaded[file.label] = file.file_uploaded
+            except:
+                pass
+            print(files_uploaded)
+            return render(request,'files.html',{'files':files_uploaded})
+
 
 

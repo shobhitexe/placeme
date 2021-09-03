@@ -28,7 +28,7 @@ class Company(models.Model):
 
 class Student(models.Model):
     description = models.TextField(max_length=500,blank=False)
-    prn_number = models.CharField(max_length=16,blank=False)
+    roll_number = models.CharField(max_length=16,blank=False,unique=True)
     contact_number = models.CharField(max_length=10,blank=False)
     college_email_id = models.EmailField(blank=False)
     GENDER_CHOICES = (

@@ -14,7 +14,7 @@
                   <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Responses</p>
   
                   
-                    <h4>Criteria:</h4>
+                    <h4>Eligibility Criteria:</h4>
                     <p></p>
                     <form action="{% url 'applications' %}"  method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -54,7 +54,8 @@
                     <div>
                       <button type="submit" class="btn btn-success btn-md me-2" name="eligible" value="{{form_id}}">Eligible Students List</button>
                       <button type="submit" class="btn btn-danger btn-md ms-2 me-2" name="ineligible" value="{{form_id}}">Ineligible Students List</button>
-                      <button type="submit" class="btn btn-primary btn-md ms-2" name="back" value="1">Back</button>
+                      <button type="submit" class="btn btn-primary btn-md ms-2 me-2" name="indiv" value="{{form_id}}">Individual Responses</button>
+                      <button type="submit" class="btn btn-dark btn-md ms-2" name="back" value="1">Back</button>
                     </div>
                     </form>
                     {% if messages %}

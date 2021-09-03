@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('description', models.CharField(max_length=500)),
-                ('prn_number', models.CharField(max_length=16)),
+                ('roll_number', models.CharField(max_length=16)),
                 ('contact_number', models.CharField(max_length=10)),
                 ('college_email_id', models.EmailField(max_length=254)),
                 ('gender', models.CharField(choices=[('F', 'Female'), ('M', 'Male'), ('O', 'Other')], max_length=1)),

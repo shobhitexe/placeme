@@ -17,7 +17,7 @@ class StudentDetailsForm(forms.ModelForm):
         model = Student
         exclude = ['user']
         labels = {
-            'prn_number': 'PRN Number',
+            'roll_number': 'Roll Number',
             'contact_number': 'Contact Number',
             'college_email_id' : 'College Email ID',
             'class10_board' : 'Class 10 Board',
