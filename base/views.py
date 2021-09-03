@@ -48,6 +48,7 @@ def student_cred_view(request):
         else:
             messages.error(request,"Invalid file format.")
             return render(request, 'student_cred.html', {})
+        dataset.drop_duplicates(subset = dataset.columns[0], keep = 'first', inplace = True)
         student_details = dataset.iloc[:,0].values
         pwd = []
         for student_uname in student_details:

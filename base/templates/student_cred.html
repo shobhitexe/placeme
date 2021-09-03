@@ -19,10 +19,16 @@
                         1. Upload a csv/excel file containing student email ids
                     </p>
                     <p>
-                        2. System will create login credentials
+                        2. Email ids should be the 1st column 
                     </p>
                     <p>
-                        3. Download file containing student login credentials
+                        3. System will discard duplicates if any
+                    </p>
+                    <p>
+                        4. System will create login credentials for each email
+                    </p>
+                    <p>
+                        5. Download file containing student login credentials
                     </p>
 
                         <form action="{% url 'student_cred' %}"  method="POST" enctype="multipart/form-data">
