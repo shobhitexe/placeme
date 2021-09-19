@@ -33,9 +33,9 @@
                     <div class="card-footer text-muted">
                         {% if request.user.is_staff %}
                         <a data-bs-toggle="modal" data-id="{{company.id}}" class="edit-company">
-                        <button class="btn btn-primary" id="edit" data-bs-toggle="modal" data-bs-target="#EditCompanyModal">Edit</button>
+                        <button class="btn btn-primary" id="edit" data-bs-toggle="modal" data-bs-target="#\3{{company.id}}">Edit</button>
                         </a>
-                        <div class="modal fade" id="EditCompanyModal">
+                        <div class="modal fade" id="{{company.id}}">
                             <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                           
