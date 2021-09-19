@@ -523,3 +523,13 @@ def placement_applications_view(request):
 
 
 
+def placement_status_view(request):
+    if request.method == 'GET':
+        status = {}
+        rnos = PlacementApplicationResponse.objects.values_list('student__roll_number',flat=True).distinct()
+        for rno in rnos:
+            name = Student.objects.get(roll_number=rno).user.get_full_name()
+            status[rno] = [name]
+        print(status)
+        return render(request,'placement_status.html')
+    return render(request,'placement_status.html')
