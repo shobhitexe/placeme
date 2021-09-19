@@ -527,9 +527,24 @@ def placement_status_view(request):
     if request.method == 'GET':
         status = {}
         rnos = PlacementApplicationResponse.objects.values_list('student__roll_number',flat=True).distinct()
+        companies_id = PlacementApplicationResponse.objects.values_list('placement_application__company__id')
         for rno in rnos:
             name = Student.objects.get(roll_number=rno).user.get_full_name()
             status[rno] = [name]
-        print(status)
-        return render(request,'placement_status.html')
+            student_responses = PlacementApplicationResponse.objects.filter(student=Student.objects.get(roll_number=rno))
+            d0_company = []
+            d1_company = []
+            d2_company = []
+            for student_response in student_responses:
+                company = student_response.placement_application.company
+                if company.day == 'Day 0':
+                    d0_company.append(company.name)
+                elif company.day == 'Day 1':
+                    d1_company.append(company.name)
+                elif company.day == 'Day 2':
+                    d2_company.append(company.name)
+            status[rno].append(d0_company)
+            status[rno].append(d1_company)
+            status[rno].append(d2_company)
+        return render(request,'placement_status.html',{'statuses':status})
     return render(request,'placement_status.html')

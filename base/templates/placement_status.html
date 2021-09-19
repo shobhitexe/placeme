@@ -5,6 +5,7 @@
 
 <link href="{% static 'css/placement_status.css' %}" rel="stylesheet"> 
 
+
 <div class="container">
     <br>
     <div class="row">
@@ -18,20 +19,55 @@
         <tr>
             <th scope="col">Roll No</th>
             <th scope="col">Name</th>
-            <th scope="col">Day 0</th>
-            <th scope="col">Day 1</th>
-            <th scope="col">Day 2</th>
+            <th scope="col">Day 0 Offers</th>
+            <th scope="col">Day 1 Offers</th>
+            <th scope="col">Day 2 Offers</th>
+            <th scope="col">Submit</th>
         </tr>
         </thead>
+        {% if statuses %}
         <tbody>
-        <tr>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-            <td>@mdo</td>
-            <td>@mdo</td>
-        </tr>
+          {% for key,values in statuses.items %}
+            <tr>
+                <td style="width: 100px;">{{key}}</td>
+                <td style="width: 250px;">{{values.0}}</td>
+                <td style="width: 175px;">
+                  <div class="input-group input-group-sm mb-2">
+                  <select multiple="multiple" name="{{key}}-Day0" class="select form-control" id="{{key}}-Day0">
+                    <option selected value>-----</option>
+                    {% for company in values.1 %}
+                    <option>{{company}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                </td>
+                <td style="width: 175px;">
+                  <div class="input-group input-group-sm mb-2">
+                  <select multiple name="{{key}}-Day1" class="select form-control" id="{{key}}-Day1">
+                    <option selected value>-----</option>
+                    {% for company in values.2 %}
+                    <option>{{company}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                </td>
+                <td style="width: 175px;">
+                  <div class="input-group input-group-sm mb-2">
+                  <select multiple name="{{key}}-Day2" class="select form-control" id="{{key}}-Day2">
+                    <option selected value>-----</option>
+                    {% for company in values.3 %}
+                    <option>{{company}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                </td>
+                <td style="width: 175px;">
+                  <button type="submit" class="btn btn-primary" name="offers" value="{{key}}">Send Offers</button>
+                </td>
+            </tr>
+          {% endfor %}
         </tbody>
+        {% endif %}
     </table>
 </div>
 
@@ -47,7 +83,7 @@
     
       // Loop through all table rows, and hide those who don't match the search query
       for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
+        td = tr[i].getElementsByTagName("td")[1];
         if (td) {
           txtValue = td.textContent || td.innerText;
           if (txtValue.toUpperCase().indexOf(filter) > -1) {

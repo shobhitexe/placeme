@@ -28,6 +28,7 @@ class Company(models.Model):
         ('Day 2', 'Day 2',),
     )
     day = models.CharField(max_length=25,choices=DAY_CHOICES,blank=False,default=DAY_CHOICES[0][0],null=False)
+    
     class Meta:
         verbose_name_plural = "Company"
 
