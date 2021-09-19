@@ -128,5 +128,11 @@ class PlacementApplicationResponseFiles(models.Model):
         verbose_name_plural = "Placement Application Response Files"
 
 
+class PlacementStatus(models.Model):
+    student = models.OneToOneField(Student,on_delete=models.CASCADE,primary_key=True)
+    offers = models.TextField()
+
+    class Meta:
+        verbose_name_plural = "Placement Status"
 
 

@@ -4,7 +4,12 @@
 {% block content %}
 
 <link href="{% static 'css/placement_status.css' %}" rel="stylesheet"> 
-
+<style>
+  th {
+  text-align: center;
+  vertical-align:middle;
+}
+</style>
 
 <div class="container">
     <br>
@@ -17,16 +22,26 @@
     <table class="table table-bordered table-hover table-dark" id="myTable">
         <thead>
         <tr>
-            <th scope="col">Roll No</th>
-            <th scope="col">Name</th>
-            <th scope="col">Day 0 Offers</th>
-            <th scope="col">Day 1 Offers</th>
-            <th scope="col">Day 2 Offers</th>
-            <th scope="col">Submit</th>
+            <th rowspan="2">Roll No</th>
+            <th rowspan="2">Name</th>
+            <th colspan="2">Day 0 Offers</th>
+            <th colspan="2">Day 1 Offers</th>
+            <th colspan="2">Day 2 Offers</th>
+            <th rowspan="2">Submit</th>
         </tr>
+        <tr>
+          <th>Applied</th>
+          <th>Sent</th>
+          <th>Applied</th>
+          <th>Sent</th>
+          <th>Applied</th>
+          <th>Sent</th>
+      </tr>
         </thead>
         {% if statuses %}
         <tbody>
+          <form method = "post" action="{% url 'placement_status' %}">
+          {% csrf_token %}
           {% for key,values in statuses.items %}
             <tr>
                 <td style="width: 100px;">{{key}}</td>
@@ -42,18 +57,15 @@
                 </div>
                 </td>
                 <td style="width: 175px;">
-                  <div class="input-group input-group-sm mb-2">
-                  <select multiple name="{{key}}-Day1" class="select form-control" id="{{key}}-Day1">
-                    <option selected value>-----</option>
-                    {% for company in values.2 %}
-                    <option>{{company}}</option>
-                    {% endfor %}
-                  </select>
-                </div>
+                <ul>
+                  {% for offer in values.2 %}
+                    <li>{{offer}}</li>
+                  {% endfor %}
+                <ul>
                 </td>
                 <td style="width: 175px;">
                   <div class="input-group input-group-sm mb-2">
-                  <select multiple name="{{key}}-Day2" class="select form-control" id="{{key}}-Day2">
+                  <select multiple name="{{key}}-Day1" class="select form-control" id="{{key}}-Day1">
                     <option selected value>-----</option>
                     {% for company in values.3 %}
                     <option>{{company}}</option>
@@ -62,10 +74,35 @@
                 </div>
                 </td>
                 <td style="width: 175px;">
+                  <ul>
+                    {% for offer in values.4 %}
+                      <li>{{offer}}</li>
+                    {% endfor %}
+                  <ul>
+                </td>
+                <td style="width: 175px;">
+                  <div class="input-group input-group-sm mb-2">
+                  <select multiple name="{{key}}-Day2" class="select form-control" id="{{key}}-Day2">
+                    <option selected value>-----</option>
+                    {% for company in values.5 %}
+                    <option>{{company}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                </td>
+                <td style="width: 175px;">
+                  <ul>
+                    {% for offer in values.6 %}
+                      <li>{{offer}}</li>
+                    {% endfor %}
+                  <ul>
+                </td>
+                <td style="width: 175px;">
                   <button type="submit" class="btn btn-primary" name="offers" value="{{key}}">Send Offers</button>
                 </td>
             </tr>
           {% endfor %}
+          </form>
         </tbody>
         {% endif %}
     </table>

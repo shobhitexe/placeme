@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
-from .models import Company, PlacementApplicationResponse,Student,PlacementApplication,PlacementApplicationResponseFiles
+from .models import Company, PlacementApplicationResponse,Student,PlacementApplication,PlacementApplicationResponseFiles,PlacementStatus
 from django.contrib.auth.password_validation import password_changed,validate_password
 from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
 from django.core.exceptions import ValidationError
@@ -527,7 +527,6 @@ def placement_status_view(request):
     if request.method == 'GET':
         status = {}
         rnos = PlacementApplicationResponse.objects.values_list('student__roll_number',flat=True).distinct()
-        companies_id = PlacementApplicationResponse.objects.values_list('placement_application__company__id')
         for rno in rnos:
             name = Student.objects.get(roll_number=rno).user.get_full_name()
             status[rno] = [name]
@@ -535,6 +534,9 @@ def placement_status_view(request):
             d0_company = []
             d1_company = []
             d2_company = []
+            d0_sent = []
+            d1_sent = []
+            d2_sent = []
             for student_response in student_responses:
                 company = student_response.placement_application.company
                 if company.day == 'Day 0':
@@ -543,8 +545,52 @@ def placement_status_view(request):
                     d1_company.append(company.name)
                 elif company.day == 'Day 2':
                     d2_company.append(company.name)
-            status[rno].append(d0_company)
-            status[rno].append(d1_company)
-            status[rno].append(d2_company)
-        return render(request,'placement_status.html',{'statuses':status})
-    return render(request,'placement_status.html')
+            
+            try:
+                sent_offers = PlacementStatus.objects.get(student= Student.objects.get(roll_number=rno))
+                sent_offers.offers = json.loads(sent_offers.offers)
+                status[rno].append(d0_company)
+                status[rno].append(sent_offers.offers['Day 0'])
+                status[rno].append(d1_company)
+                status[rno].append(sent_offers.offers['Day 1'])
+                status[rno].append(d2_company)
+                status[rno].append(sent_offers.offers['Day 2'])
+            except:
+                status[rno].append(d0_company)
+                status[rno].append([])
+                status[rno].append(d1_company)
+                status[rno].append([])
+                status[rno].append(d2_company)
+                status[rno].append([])
+            print(status)
+        return render(request,'placement_status.html',{'statuses':status,'offers':sent_offers})
+
+    if request.method == 'POST':
+        rno = request.POST.get('offers')
+        d0_offers = request.POST.getlist(str(rno)+'-Day0')
+        d1_offers = request.POST.getlist(str(rno)+'-Day1')
+        d2_offers = request.POST.getlist(str(rno)+'-Day2')
+        if "" in d0_offers :
+            d0_offers.remove("")
+        if "" in d1_offers :
+            d1_offers.remove("")
+        if "" in d2_offers :
+            d2_offers.remove("")
+        offers = {}
+        offers['Day 0'] = d0_offers
+        offers['Day 1'] = d1_offers
+        offers['Day 2'] = d2_offers
+        offers = json.dumps(offers)
+        student = Student.objects.get(roll_number = rno)
+
+        try:
+            status = get_object_or_404(PlacementStatus,student=student)
+            status.offers = offers
+            status.save()
+        except:
+            status = PlacementStatus()
+            status.student = student
+            status.offers = offers
+            status.save()
+
+        return redirect('placement_status')
