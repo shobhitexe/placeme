@@ -6,8 +6,15 @@
 <br>
 <div class="container-fluid">
     <div class="row">
+        <div>
+            <button class="btn btn-primary filter-button" data-filter="all">All</button>
+            <button class="btn btn-primary filter-button" data-filter="0">Day 0</button>
+            <button class="btn btn-primary filter-button" data-filter="1">Day 1</button>
+            <button class="btn btn-primary filter-button" data-filter="2">Day 2</button>
+        </div>
+        <p></p>
         {% for application in applications %}
-            <div class="col-auto">
+            <div class="col-auto filter {{application.0.company.day}}">
                 <div class="card border-primary mb-4">
                         {% if application.0.company.logo %}
                         <img style="height: 200px; width: 100%; display: block;" src="{{ application.0.company.logo.url }}" alt="Card image">
@@ -21,6 +28,7 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">Company Name : {{application.0.company.name}}</li>
                         <li class="list-group-item">Placement Year : {{application.0.placement_year}}</li>
+                        <li class="list-group-item">Placement Day : {{application.0.company.day}}</li>
                         <li class="list-group-item">Created On : {{application.0.created_at}}</li>
                     </ul>
                     <div class="card-footer text-muted">
@@ -50,5 +58,24 @@
 
 {% endif %}
 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    $(document).ready(function(){
 
+$(".filter-button").click(function(){
+    var value = $(this).attr('data-filter');
+    
+    if(value == "all")
+    {
+        $('.filter').show('1000');
+    }
+    else
+    {
+        $('.filter.Day').not('.'+value).hide('3000');
+        $('.filter.Day').filter('.'+value).show('3000');
+    }
+});
+
+});
+</script>
 {% endblock content %}
