@@ -9,10 +9,3 @@ class Migration(migrations.Migration):
         ('base', '0019_rename_response_id_placementapplicationresponsefiles_response'),
     ]
 
-    operations = [
-        migrations.RenameField(
-            model_name='student',
-            old_name='prn_number',
-            new_name='roll_number',
-        ),
-    ]

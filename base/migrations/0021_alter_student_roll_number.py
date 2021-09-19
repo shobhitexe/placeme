@@ -9,10 +9,3 @@ class Migration(migrations.Migration):
         ('base', '0020_rename_prn_number_student_roll_number'),
     ]
 
-    operations = [
-        migrations.AlterField(
-            model_name='student',
-            name='roll_number',
-            field=models.CharField(max_length=16, unique=True),
-        ),
-    ]
