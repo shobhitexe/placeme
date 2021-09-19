@@ -6,8 +6,15 @@
 <br>
 <div class="container-fluid">
     <div class="row">
+        <div>
+            <button class="btn btn-primary filter-button" data-filter="all">All</button>
+            <button class="btn btn-default filter-button" data-filter="0">Day 0</button>
+            <button class="btn btn-default filter-button" data-filter="1">Day 1</button>
+            <button class="btn btn-default filter-button" data-filter="2">Day 2</button>
+        </div>
+        <p></p>
         {% for company in companies %}
-            <div class="col-auto">
+            <div class="col-auto filter {{company.day}}">
                 <div class="card border-primary mb-4">
                         {% if company.logo %}
                         <img style="height: 200px; width: 100%; display: block;" src="{{ company.logo.url }}" alt="Card image">
@@ -19,6 +26,7 @@
                         <p class="card-text">{{ company.description }}</p>
                     </div>
                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Placement Day : {{company.day}}</li>
                         <li class="list-group-item">Super-Dream Company : {{company.is_dream}}</li>
                         <li class="list-group-item">Starting Salary : {{company.starting_salary}}</li>
                     </ul>
@@ -59,6 +67,10 @@
                                         <br>
                                         <div>
                                             {{ addform.starting_salary|as_crispy_field }}
+                                        </div>
+                                        <br>
+                                        <div>
+                                            {{ addform.day|as_crispy_field }}
                                         </div>
                                         <br>
                                         <button class="btn btn-primary" type="submit" id="sub" name="updatecompany" value="{{company.id}}">Update</button>
@@ -140,6 +152,10 @@
                     {{ addform.starting_salary|as_crispy_field }}
                 </div>
                 <br>
+                <div>
+                    {{ addform.day|as_crispy_field }}
+                </div>
+                <br>
                 <button class="btn btn-primary" type="submit" name="addcompany" value="1">Submit</button>
             </form>
         </div>
@@ -164,4 +180,23 @@
     }
 </style>
 
+<script>
+    $(document).ready(function(){
+
+$(".filter-button").click(function(){
+    var value = $(this).attr('data-filter');
+    
+    if(value == "all")
+    {
+        $('.filter').show('1000');
+    }
+    else
+    {
+        $('.filter.Day').not('.'+value).hide('3000');
+        $('.filter.Day').filter('.'+value).show('3000');
+    }
+});
+
+});
+</script>
 {% endblock content %}

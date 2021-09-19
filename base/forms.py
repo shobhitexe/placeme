@@ -5,11 +5,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (Layout, Row, Column,Field)
   
 class AddCompanyForm(forms.ModelForm):
-  
+
     class Meta:
         model = Company
         fields = "__all__"
-        labels ={'is_dream': 'Dream Company','starting_salary':'Starting Salary'}
+        labels ={'is_dream': 'Dream Company','starting_salary':'Starting Salary','day':'Day'}
 
 class StudentDetailsForm(forms.ModelForm):
   
