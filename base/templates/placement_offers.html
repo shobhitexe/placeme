@@ -92,6 +92,40 @@
         day0opt = "{{offers.Day0}}"
         day1opt = "{{offers.Day1}}"
         day2opt = "{{offers.Day2}}"
+        status = "{{status}}"
+        if (status === "[]")
+        {
+            $('#d0sub').prop('disabled', true)
+            $('#d1sub').prop('disabled', true)
+            $('#d2sub').prop('disabled', true)
+        }
+        else
+        {
+            d0company = "{{status.day0_selected_company_name}}"
+            d1company = "{{status.day1_selected_company_name}}"
+            d2company = "{{status.day2_selected_company_name}}"
+            if (d0company != "")
+            {
+                $('#day0opt').val(d0company)
+                $('#day0opt').prop('disabled',true)
+                $('#d0sub').prop('disabled', true)
+                $('#d0sub').html('Already Confirmed')
+            }
+            if (d1company != "")
+            {
+                $('#day1opt').val(d1company)
+                $('#day1opt').prop('disabled',true)
+                $('#d1sub').prop('disabled', true)
+                $('#d1sub').html('Already Confirmed')
+            }
+            if (d2company != "")
+            {
+                $('#day2opt').val(d2company)
+                $('#day2opt').prop('disabled',true)
+                $('#d2sub').prop('disabled', true)
+                $('#d2sub').html('Already Confirmed')
+            }
+        }
         if (day0opt === "[]")
         {
             $('#d0sub').prop('disabled', true)

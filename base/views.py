@@ -599,9 +599,11 @@ def placement_offers_view(request):
         try:
             offers = PlacementStatus.objects.get(student=student).offers
             offers = json.loads(offers)
+            status = PlacementStatus.objects.get(student=student)
         except:
             offers = {}
-        return render(request,'placement_offers.html',{'offers':offers})
+            status = []
+        return render(request,'placement_offers.html',{'offers':offers,'status':status})
 
     elif request.method == 'POST':
         student = Student.objects.get(user=request.user)
