@@ -600,6 +600,12 @@ def placement_offers_view(request):
             offers = PlacementStatus.objects.get(student=student).offers
             offers = json.loads(offers)
             status = PlacementStatus.objects.get(student=student)
+            if status.day0_selected_company_name == None:
+                status.day0_selected_company_name = ""
+            if status.day1_selected_company_name == None:
+                status.day1_selected_company_name = ""
+            if status.day2_selected_company_name == None:
+                status.day2_selected_company_name = ""
         except:
             offers = {}
             status = []
@@ -644,3 +650,19 @@ def placement_offers_view(request):
                     status.save(update_fields=['day2_selected_company_name','day2_selected_company_salary'])
                     break
             return redirect('placement_offers')
+
+        
+        elif request.POST.getlist("finalsub"):
+            final = request.POST.getlist('final')[0]
+            cname = final[0:final.find('(Day ')-1]
+            day = final[final.find('(Day ') + 1:final.find('(Day ') + 6]
+            for student_response in student_responses:
+                company = student_response.placement_application.company
+                if company.name == cname and company.day == day:
+                    salary = company.starting_salary
+                    status.placed_company_name = company.name
+                    status.placed_company_salary = salary
+                    status.placed_company_day = day
+                    status.save(update_fields=['placed_company_name','placed_company_salary','placed_company_day'])
+                    break
+            return redirect('placement_offers') 

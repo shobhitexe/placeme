@@ -18,10 +18,7 @@
                         1. Please choose carefully
                     </p>
                     <p>
-                        2. Cannot undo selection after selected
-                    </p>
-                    <p>
-                        3. Latest offer selected will be considered as final
+                        2. Cannot undo selection after selecting
                     </p>
                     <hr class="my-4" />
                     <form method = "post" action="{% url 'placement_offers' %}">
@@ -75,6 +72,34 @@
                             <button name="day2sub" id="d2sub" type="submit" class="btn btn-primary">Confirm</button>
                         </div>
                     </div>
+                    <hr class="my-4" />
+                    <div class="row">
+                        <div class="form-group col-md-5">
+                            <label>Final Selection :</label>
+                        </div>
+                        <div class="form-group col-md-6">
+                          <select name="final" class="select form-control" id="final">
+                            {% if status.day0_selected_company_name %} 
+                            {% ifnotequal status.day0_selected_company_name "" %}
+                            <option>{{status.day0_selected_company_name}} (Day 0)</option>
+                            {% endifnotequal %}
+                            {% endif %}
+                            {% if status.day1_selected_company_name %} 
+                            {% ifnotequal status.day1_selected_company_name "" %}
+                            <option>{{status.day1_selected_company_name}} (Day 1)</option>
+                            {% endifnotequal %}
+                            {% endif %}
+                            {% if status.day2_selected_company_name %} 
+                            {% ifnotequal status.day2_selected_company_name "" %}
+                            <option>{{status.day2_selected_company_name}} (Day 2)</option>
+                            {% endifnotequal %}
+                            {% endif %}
+                          </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <button name="finalsub" id="finalsub" type="submit" class="btn btn-primary">Confirm</button>
+                        </div>
+                    </div>
                     </form>
                 </div>
               </div>
@@ -98,32 +123,46 @@
             $('#d0sub').prop('disabled', true)
             $('#d1sub').prop('disabled', true)
             $('#d2sub').prop('disabled', true)
+            $('#finalsub').prop('disabled',true)
         }
         else
         {
             d0company = "{{status.day0_selected_company_name}}"
             d1company = "{{status.day1_selected_company_name}}"
             d2company = "{{status.day2_selected_company_name}}"
-            if (d0company != "")
+            final_company = "{{status.placed_company_name}}"
+            final_day = "{{status.placed_company_day}}"
+            if (d0company != "" && d0company != "None")
             {
                 $('#day0opt').val(d0company)
                 $('#day0opt').prop('disabled',true)
                 $('#d0sub').prop('disabled', true)
                 $('#d0sub').html('Already Confirmed')
             }
-            if (d1company != "")
+            if (d1company != "" && d1company != "None")
             {
                 $('#day1opt').val(d1company)
                 $('#day1opt').prop('disabled',true)
                 $('#d1sub').prop('disabled', true)
                 $('#d1sub').html('Already Confirmed')
             }
-            if (d2company != "")
+            if (d2company != "" && d2company != "None")
             {
                 $('#day2opt').val(d2company)
                 $('#day2opt').prop('disabled',true)
                 $('#d2sub').prop('disabled', true)
                 $('#d2sub').html('Already Confirmed')
+            }
+            if (final_company != "" && final_company != "None")
+            {
+                $('#final').val(final_company + ' (' + final_day + ')')
+                $('#final').prop('disabled',true)
+                $('#finalsub').prop('disabled', true)
+                $('#finalsub').html('You are Placed!!')
+            }
+            if ((d0company === "" || d0company === "None") && (d1company === "" || d1company === "None") && (d2company === "" || d2company === "None"))
+            {
+                $('#finalsub').prop('disabled',true)
             }
         }
         if (day0opt === "[]")
