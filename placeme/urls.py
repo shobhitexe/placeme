@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,re_path
-from base.views import index_view,login_handle_view,student_cred_view,company_view,profile_view,academics_view,createform_view,placement_applications_view,placement_status_view
+from base.views import index_view,login_handle_view,student_cred_view,company_view,profile_view,academics_view,createform_view,placement_applications_view,placement_status_view,placement_offers_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -30,6 +30,7 @@ urlpatterns = [
     re_path(r'^create-form/(?P<company_id>[0-9])/$', createform_view, name='createform'),
     path('placement-applications/',placement_applications_view,name='applications'),
     path('placement-status/',placement_status_view,name='placement_status'),
+    path('placement-offers/',placement_offers_view,name='placement_offers'),
 ]
 
 if settings.DEBUG:

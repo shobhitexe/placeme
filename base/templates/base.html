@@ -41,7 +41,7 @@
                   <li><a class="dropdown-item" href="#">Edit Placement Rules</a></li>
                   {% else %}
                   <li><a class="dropdown-item" href="#">View Placement Rules</a></li>
-                  <li><a class="dropdown-item" href="#">View Placement Results</a></li>
+                  <li><a class="dropdown-item" href="{% url 'placement_offers' %}">View Placement Offers</a></li>
                   {% endif %}
                   <li><a class="dropdown-item" href="{% url 'applications' %}">Placement Applications</a></li>
                 </ul>

@@ -143,7 +143,7 @@ def academics_view(request):
         studform = StudentDetailsForm()
         try:
             student = Student.objects.get(user_id=request.user.id)
-            for field,attr in zip(studform.fields,student._meta.get_fields()[1:]):
+            for field,attr in zip(studform.fields,student._meta.get_fields()[2:]):
                 studform[field].initial = getattr(student,attr.name)
             return render(request,'academics.html',{'form':studform})
         except:  
@@ -594,3 +594,8 @@ def placement_status_view(request):
             status.save()
 
         return redirect('placement_status')
+
+
+def placement_offers_view(request):
+    if request.method == 'GET':
+        return render(request,'placement_offers.html')
