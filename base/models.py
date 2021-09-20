@@ -131,7 +131,16 @@ class PlacementApplicationResponseFiles(models.Model):
 class PlacementStatus(models.Model):
     student = models.OneToOneField(Student,on_delete=models.CASCADE,primary_key=True)
     offers = models.TextField()
-
+    day0_selected_company_name = models.CharField(max_length=50,blank=True,null=True)
+    day0_selected_company_salary = models.IntegerField(blank=True,null=True)
+    day1_selected_company_name = models.CharField(max_length=50,blank=True,null=True)
+    day1_selected_company_salary = models.IntegerField(blank=True,null=True)
+    day2_selected_company_name = models.CharField(max_length=50,blank=True,null=True)
+    day2_selected_company_salary = models.IntegerField(blank=True,null=True)
+    placed_company_name = models.CharField(max_length=50,blank=True,null=True)
+    placed_company_salary = models.IntegerField(blank=True,null=True)
+    placed_company_day = models.CharField(max_length=50,blank=True,null=True)
+    
     class Meta:
         verbose_name_plural = "Placement Status"
 

@@ -527,6 +527,7 @@ def placement_status_view(request):
     if request.method == 'GET':
         status = {}
         rnos = PlacementApplicationResponse.objects.values_list('student__roll_number',flat=True).distinct()
+        sent_offers = {}
         for rno in rnos:
             name = Student.objects.get(roll_number=rno).user.get_full_name()
             status[rno] = [name]
@@ -534,9 +535,6 @@ def placement_status_view(request):
             d0_company = []
             d1_company = []
             d2_company = []
-            d0_sent = []
-            d1_sent = []
-            d2_sent = []
             for student_response in student_responses:
                 company = student_response.placement_application.company
                 if company.day == 'Day 0':
@@ -550,11 +548,11 @@ def placement_status_view(request):
                 sent_offers = PlacementStatus.objects.get(student= Student.objects.get(roll_number=rno))
                 sent_offers.offers = json.loads(sent_offers.offers)
                 status[rno].append(d0_company)
-                status[rno].append(sent_offers.offers['Day 0'])
+                status[rno].append(sent_offers.offers['Day0'])
                 status[rno].append(d1_company)
-                status[rno].append(sent_offers.offers['Day 1'])
+                status[rno].append(sent_offers.offers['Day1'])
                 status[rno].append(d2_company)
-                status[rno].append(sent_offers.offers['Day 2'])
+                status[rno].append(sent_offers.offers['Day2'])
             except:
                 status[rno].append(d0_company)
                 status[rno].append([])
@@ -562,7 +560,6 @@ def placement_status_view(request):
                 status[rno].append([])
                 status[rno].append(d2_company)
                 status[rno].append([])
-            print(status)
         return render(request,'placement_status.html',{'statuses':status,'offers':sent_offers})
 
     if request.method == 'POST':
@@ -577,9 +574,9 @@ def placement_status_view(request):
         if "" in d2_offers :
             d2_offers.remove("")
         offers = {}
-        offers['Day 0'] = d0_offers
-        offers['Day 1'] = d1_offers
-        offers['Day 2'] = d2_offers
+        offers['Day0'] = d0_offers
+        offers['Day1'] = d1_offers
+        offers['Day2'] = d2_offers
         offers = json.dumps(offers)
         student = Student.objects.get(roll_number = rno)
 
@@ -598,4 +595,50 @@ def placement_status_view(request):
 
 def placement_offers_view(request):
     if request.method == 'GET':
-        return render(request,'placement_offers.html')
+        student = Student.objects.get(user=request.user)
+        try:
+            offers = PlacementStatus.objects.get(student=student).offers
+            offers = json.loads(offers)
+        except:
+            offers = {}
+        return render(request,'placement_offers.html',{'offers':offers})
+
+    elif request.method == 'POST':
+        student = Student.objects.get(user=request.user)
+        student_responses = PlacementApplicationResponse.objects.filter(student=student)   
+        status = PlacementStatus(student = student)   
+        if request.POST.getlist("day0sub"):
+            cname = request.POST.getlist('day0')[0]
+            for student_response in student_responses:
+                company = student_response.placement_application.company
+                if company.name==cname and company.day== 'Day 0':
+                    salary = company.starting_salary
+                    status.day0_selected_company_name = company.name
+                    status.day0_selected_company_salary = salary
+                    status.save(update_fields=['day0_selected_company_name','day0_selected_company_salary'])
+                    break
+            return redirect('placement_offers')
+
+        elif request.POST.getlist("day1sub"):
+            cname = request.POST.getlist('day1')[0]
+            for student_response in student_responses:
+                company = student_response.placement_application.company
+                if company.name==cname and company.day== 'Day 1':
+                    salary = company.starting_salary
+                    status.day1_selected_company_name = company.name
+                    status.day1_selected_company_salary = salary
+                    status.save(update_fields=['day1_selected_company_name','day1_selected_company_salary'])
+                    break
+            return redirect('placement_offers')
+        
+        elif request.POST.getlist("day2sub"):
+            cname = request.POST.getlist('day2')[0]
+            for student_response in student_responses:
+                company = student_response.placement_application.company
+                if company.name==cname and company.day== 'Day 2':
+                    salary = company.starting_salary
+                    status.day2_selected_company_name = company.name
+                    status.day2_selected_company_salary = salary
+                    status.save(update_fields=['day2_selected_company_name','day2_selected_company_salary'])
+                    break
+            return redirect('placement_offers')
