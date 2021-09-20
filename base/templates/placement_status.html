@@ -51,6 +51,9 @@
                 <td style="width: 175px;">
                   <div class="input-group input-group-sm mb-2">
                   <select style="width: 125px;" data-placeholder="Select Company" multiple="multiple" name="{{key}}-Day0" class="chosen-select" id="{{key}}-Day0">
+                    {% for offer in values.2 %}
+                    <option selected>{{offer}}</option>
+                    {% endfor %}
                     {% for company in values.1 %}
                     <option>{{company}}</option>
                     {% endfor %}
@@ -67,6 +70,9 @@
                 <td style="width: 175px;">
                   <div class="input-group input-group-sm mb-2">
                     <select style="width: 125px;" data-placeholder="Select Company" multiple name="{{key}}-Day1" class="chosen-select" id="{{key}}-Day1">
+                    {% for offer in values.4 %}
+                    <option selected>{{offer}}</option>
+                    {% endfor %}
                     {% for company in values.3 %}
                     <option>{{company}}</option>
                     {% endfor %}
@@ -83,6 +89,9 @@
                 <td style="width: 175px;">
                   <div class="input-group input-group-sm mb-2">
                     <select style="width: 125px;" data-placeholder="Select Company" multiple name="{{key}}-Day2" class="chosen-select" id="{{key}}-Day2">
+                    {% for offer in values.6 %}
+                    <option selected>{{offer}}</option>
+                    {% endfor %}
                     {% for company in values.5 %}
                     <option>{{company}}</option>
                     {% endfor %}

@@ -522,6 +522,12 @@ def placement_applications_view(request):
             return render(request,'fillform.html',{'form':form,'title':form_title,'description':form_description,'form_id':form_id})
 
 
+def listdiff(list1,list2):
+    list_difference = []
+    for item in list1:
+        if item not in list2:
+            list_difference.append(item)
+    return list_difference
 
 def placement_status_view(request):
     if request.method == 'GET':
@@ -547,11 +553,11 @@ def placement_status_view(request):
             try:
                 sent_offers = PlacementStatus.objects.get(student= Student.objects.get(roll_number=rno))
                 sent_offers.offers = json.loads(sent_offers.offers)
-                status[rno].append(d0_company)
+                status[rno].append(listdiff(d0_company,sent_offers.offers['Day0']))
                 status[rno].append(sent_offers.offers['Day0'])
-                status[rno].append(d1_company)
+                status[rno].append(listdiff(d1_company,sent_offers.offers['Day1']))
                 status[rno].append(sent_offers.offers['Day1'])
-                status[rno].append(d2_company)
+                status[rno].append(listdiff(d2_company,sent_offers.offers['Day2']))
                 status[rno].append(sent_offers.offers['Day2'])
             except:
                 status[rno].append(d0_company)
