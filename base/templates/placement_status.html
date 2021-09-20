@@ -2,7 +2,9 @@
 {% load static %}  
 {% load crispy_forms_tags %}
 {% block content %}
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+<link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
 <link href="{% static 'css/placement_status.css' %}" rel="stylesheet"> 
 <style>
   th {
@@ -30,11 +32,11 @@
             <th rowspan="2">Submit</th>
         </tr>
         <tr>
-          <th>Applied</th>
+          <th>Send Offers</th>
           <th>Sent</th>
-          <th>Applied</th>
+          <th>Send Offers</th>
           <th>Sent</th>
-          <th>Applied</th>
+          <th>Send Offers</th>
           <th>Sent</th>
       </tr>
         </thead>
@@ -45,18 +47,17 @@
           {% for key,values in statuses.items %}
             <tr>
                 <td style="width: 100px;">{{key}}</td>
-                <td style="width: 250px;">{{values.0}}</td>
+                <td style="width: 400px;">{{values.0}}</td>
                 <td style="width: 175px;">
                   <div class="input-group input-group-sm mb-2">
-                  <select multiple="multiple" name="{{key}}-Day0" class="select form-control" id="{{key}}-Day0">
-                    <option selected value>-----</option>
+                  <select style="width: 125px;" data-placeholder="Select Company" multiple="multiple" name="{{key}}-Day0" class="chosen-select" id="{{key}}-Day0">
                     {% for company in values.1 %}
                     <option>{{company}}</option>
                     {% endfor %}
                   </select>
                 </div>
                 </td>
-                <td style="width: 175px;">
+                <td style="width: 250px;">
                 <ul>
                   {% for offer in values.2 %}
                     <li>{{offer}}</li>
@@ -65,15 +66,14 @@
                 </td>
                 <td style="width: 175px;">
                   <div class="input-group input-group-sm mb-2">
-                  <select multiple name="{{key}}-Day1" class="select form-control" id="{{key}}-Day1">
-                    <option selected value>-----</option>
+                    <select style="width: 125px;" data-placeholder="Select Company" multiple name="{{key}}-Day1" class="chosen-select" id="{{key}}-Day1">
                     {% for company in values.3 %}
                     <option>{{company}}</option>
                     {% endfor %}
                   </select>
                 </div>
                 </td>
-                <td style="width: 175px;">
+                <td style="width: 250px;">
                   <ul>
                     {% for offer in values.4 %}
                       <li>{{offer}}</li>
@@ -82,15 +82,14 @@
                 </td>
                 <td style="width: 175px;">
                   <div class="input-group input-group-sm mb-2">
-                  <select multiple name="{{key}}-Day2" class="select form-control" id="{{key}}-Day2">
-                    <option selected value>-----</option>
+                    <select style="width: 125px;" data-placeholder="Select Company" multiple name="{{key}}-Day2" class="chosen-select" id="{{key}}-Day2">
                     {% for company in values.5 %}
                     <option>{{company}}</option>
                     {% endfor %}
                   </select>
                 </div>
                 </td>
-                <td style="width: 175px;">
+                <td style="width: 250px;">
                   <ul>
                     {% for offer in values.6 %}
                       <li>{{offer}}</li>
@@ -132,5 +131,12 @@
       }
     }
 </script>
+
+<script>
+  $(".chosen-select").chosen({
+  no_results_text: "Oops, nothing found!"
+})
+</script>
+
 
 {% endblock content %}

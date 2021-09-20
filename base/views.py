@@ -560,7 +560,7 @@ def placement_status_view(request):
                 status[rno].append([])
                 status[rno].append(d2_company)
                 status[rno].append([])
-        return render(request,'placement_status.html',{'statuses':status,'offers':sent_offers})
+        return render(request,'placement_status.html',{'statuses':status})
 
     if request.method == 'POST':
         rno = request.POST.get('offers')

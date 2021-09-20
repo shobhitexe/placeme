@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 {% if companies %}
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <br>
 <div class="container-fluid">
     <div class="row">
@@ -80,7 +81,7 @@
                             </div>
                           </div>
 
-                          <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+                          
                           <script>
                             $(document).on("click", ".edit-company", function () {
                              var id = $(this).attr('data-id');
