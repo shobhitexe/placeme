@@ -15,6 +15,11 @@ import json
 from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
 from .resources import CompanyResource,UserResource,StudentResource,PlacementApplicationResource,PlacementApplicationResponseResource,PlacementStatusResource
+from plotly.offline import download_plotlyjs,init_notebook_mode,plot,iplot
+import plotly.graph_objects as go
+import cufflinks as cf
+import chart_studio.plotly as ply
+import plotly.express as px
 # Create your views here.
 
 def index_view(request):
@@ -744,7 +749,13 @@ def getyearlybar(years_options):
     for year in years_options:
         total_placed.append(len(dataset[dataset['Year'] == int(year)]))
     
-    return dataset
+    plot_dataset = pd.DataFrame(columns=['Placement Year','Total Placed'])
+    plot_dataset['Placement Year'] = years_options
+    plot_dataset['Total Placed'] = total_placed
+    fig = px.bar(plot_dataset, x='Placement Year', y='Total Placed')
+    fig.update_layout(title='Yearly Placement Count',xaxis_title='Placement Year',yaxis_title='Total Placed')
+    plot_div=plot(fig, output_type='div',include_plotlyjs=False)
+    return dataset,plot_div
 
 def report_view(request):
     year_options = PlacementStatus.objects.values('placed_year').distinct()
@@ -754,5 +765,5 @@ def report_view(request):
     if request.method == 'POST':
         if request.POST.get('yearly'):
             years = request.POST.getlist('yearly-select')
-            dataset = getyearlybar(years)
-            return render(request,'report.html',{'year_options': year_options})
+            dataset,plot = getyearlybar(years)
+            return render(request,'report.html',{'year_options': year_options,'plot':plot})
