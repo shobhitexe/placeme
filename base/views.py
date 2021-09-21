@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError
 import json
 from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
-
+from .resources import CompanyResource,UserResource,StudentResource,PlacementApplicationResource,PlacementApplicationResponseResource,PlacementStatusResource
 # Create your views here.
 
 def index_view(request):
@@ -672,3 +672,44 @@ def placement_offers_view(request):
                     status.save(update_fields=['placed_company_name','placed_company_salary','placed_company_day'])
                     break
             return redirect('placement_offers') 
+
+def backup_view(request):
+    if request.method == 'GET':
+        return render(request,'backup.html')
+    
+    elif request.method == 'POST':
+        if request.POST.get('company'):
+            dataset = CompanyResource().export()
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="companies.csv"'
+            return response
+        
+        if request.POST.get('user'):
+            dataset = UserResource().export()
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="users.csv"'
+            return response
+        
+        if request.POST.get('student'):
+            dataset = StudentResource().export()
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="students.csv"'
+            return response
+        
+        if request.POST.get('placementapp'):
+            dataset = PlacementApplicationResource().export()
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="placement-applications.csv"'
+            return response
+
+        if request.POST.get('placementappres'):
+            dataset = PlacementApplicationResponseResource().export()
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="placement-applications-responses.csv"'
+            return response
+
+        if request.POST.get('placementstatus'):
+            dataset = PlacementStatusResource().export()
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="placement-status.csv"'
+            return response
