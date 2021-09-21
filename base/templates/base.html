@@ -37,7 +37,7 @@
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                   {% if request.user.is_staff %}
-                  <li><a class="dropdown-item" href="#">Generate Placement Report</a></li>
+                  <li><a class="dropdown-item" href="{% url 'report' %}">Generate Placement Report</a></li>
                   <li><a class="dropdown-item" href="#">Edit Placement Rules</a></li>
                   {% else %}
                   <li><a class="dropdown-item" href="#">View Placement Rules</a></li>

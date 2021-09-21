@@ -140,6 +140,7 @@ class PlacementStatus(models.Model):
     placed_company_name = models.CharField(max_length=50,blank=True,null=True)
     placed_company_salary = models.IntegerField(blank=True,null=True)
     placed_company_day = models.CharField(max_length=50,blank=True,null=True)
+    placed_year = models.PositiveSmallIntegerField(blank=True,null=True)
     
     class Meta:
         verbose_name_plural = "Placement Status"

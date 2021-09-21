@@ -669,7 +669,8 @@ def placement_offers_view(request):
                     status.placed_company_name = company.name
                     status.placed_company_salary = salary
                     status.placed_company_day = day
-                    status.save(update_fields=['placed_company_name','placed_company_salary','placed_company_day'])
+                    status.placed_year = Student.objects.get(user=request.user).expected_grad_year
+                    status.save(update_fields=['placed_company_name','placed_company_salary','placed_company_day','placed_year'])
                     break
             return redirect('placement_offers') 
 
@@ -713,3 +714,45 @@ def backup_view(request):
             response = HttpResponse(dataset.csv, content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="placement-status.csv"'
             return response
+
+def getyearlybar(years_options):
+    dataset = pd.DataFrame(columns = ['Roll Number','Name','Placed_Company','Year'])
+    students_applied_rno = PlacementApplicationResponse.objects.filter(placement_application__placement_year__in = years_options).values('student__roll_number').distinct()
+    rnos = []
+    names = []
+    placed_companies = []
+    years = []
+    for rno in students_applied_rno:
+        roll_num = rno['student__roll_number']
+        student = Student.objects.get(roll_number = roll_num)
+        years.append(student.expected_grad_year)
+        rnos.append(roll_num)
+        names.append(student.user.get_full_name())
+        try :
+            status = PlacementStatus.objects.get(student=student)
+            if status.placed_company_name == '' or status.placed_company_name == None:
+                placed_companies.append('')
+            else:
+                placed_companies.append(status.placed_company_name)
+        except:
+            placed_companies.append('')
+    dataset['Roll Number'] = rnos
+    dataset['Name'] = names
+    dataset['Placed_Company'] = placed_companies
+    dataset['Year'] = years
+    total_placed = []
+    for year in years_options:
+        total_placed.append(len(dataset[dataset['Year'] == int(year)]))
+    
+    return dataset
+
+def report_view(request):
+    year_options = PlacementStatus.objects.values('placed_year').distinct()
+    if request.method == 'GET':
+        return render(request,'report.html',{'year_options': year_options})
+
+    if request.method == 'POST':
+        if request.POST.get('yearly'):
+            years = request.POST.getlist('yearly-select')
+            dataset = getyearlybar(years)
+            return render(request,'report.html',{'year_options': year_options})
