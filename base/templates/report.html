@@ -21,13 +21,33 @@
                         {% endfor %}
                     </select>
                 </div>
-                {% if plot %}
-                <div class="card-block">
+                {% if bar_plot %}
+                <div class="card-block filter yearly-bar">
                     {% autoescape off %}     
-                    {{plot}}  
+                    {{bar_plot}}  
                     {% endautoescape %}
                 </div>
                 {% endif %}
+                {% if pie_plot %}
+                <div class="card-block filter yearly-pie">
+                    {% autoescape off %}     
+                    {{pie_plot}}  
+                    {% endautoescape %}
+                </div>
+                {% endif %}
+                {% if scatter_plot %}
+                <div class="card-block filter yearly-scatter">
+                    {% autoescape off %}     
+                    {{scatter_plot}}  
+                    {% endautoescape %}
+                </div>
+                <div class="card-block">
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-bar">Bar Plot</button>
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-pie">Pie Plot</button>
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-scatter">Scatter Plot</button>
+                </div>
+                {% endif %}
+                <br>
                 <div class="card-footer">
                     <button type="submit" name="yearly" value="1" class="btn btn-primary">Generate Report</button>
                 </div>
@@ -109,5 +129,21 @@
     no_results_text: "Oops, nothing found!"
   })
   </script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+
+$(document).ready(function(){
+    $('.filter').hide();
+    $('.filter.yearly-bar').show()
+
+$(".filter-button").click(function(){
+    var value = $(this).attr('data-filter');
+    $('.filter').not('.'+value).hide('3000');
+    $('.filter').filter('.'+value).show('3000');
+});
+
+});
+</script>
 {% endblock content %}
 

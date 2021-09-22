@@ -20,6 +20,7 @@ import plotly.graph_objects as go
 import cufflinks as cf
 import chart_studio.plotly as ply
 import plotly.express as px
+from plotly.subplots import make_subplots
 # Create your views here.
 
 def index_view(request):
@@ -720,7 +721,96 @@ def backup_view(request):
             response['Content-Disposition'] = 'attachment; filename="placement-status.csv"'
             return response
 
-def getyearlybar(years_options):
+def getscatterplots(plot_dataset):
+    fig = make_subplots(rows=1, cols=2)
+    # Subplot 1
+    fig.add_trace(
+        go.Scatter(
+            name="Yearly Placed",
+            x=plot_dataset["Placement Year"],
+            y=plot_dataset["Total Placed"],
+        ),
+        row=1,
+        col=1,
+    )
+
+    # Subplot 2
+    fig.add_trace(
+        go.Scatter(
+            name="Yearly Appeared",
+            x=plot_dataset["Placement Year"],
+            y=plot_dataset["Total Appeared"],
+        ),
+        row=1,
+        col=2,
+    )
+
+    fig.update_layout(title='Yearly Placed and Appeared',xaxis_title='Placement Year',yaxis_title='Count')
+    yearly_scatter_plot_div=plot(fig, output_type='div',include_plotlyjs=False)
+
+    return yearly_scatter_plot_div
+
+
+def getbarplots(plot_dataset):
+    fig = make_subplots(rows=1, cols=2)
+    # Subplot 1
+    fig.add_trace(
+        go.Bar(
+            name="Yearly Placed",
+            x=plot_dataset["Placement Year"],
+            y=plot_dataset["Total Placed"],
+        ),
+        row=1,
+        col=1,
+    )
+
+    # Subplot 2
+    fig.add_trace(
+        go.Bar(
+            name="Yearly Appeared",
+            x=plot_dataset["Placement Year"],
+            y=plot_dataset["Total Appeared"],
+        ),
+        row=1,
+        col=2,
+    )
+
+    fig.update_layout(title='Yearly Placed and Appeared Count',xaxis_title='Placement Year',yaxis_title='Count')
+    yearly_bar_plot_div=plot(fig, output_type='div',include_plotlyjs=False)
+
+    return yearly_bar_plot_div
+
+def getpieplots(plot_dataset):
+    fig = make_subplots(rows=1, cols=2,specs=[[{"type": "pie"}, {"type": "pie"}]])
+    # Subplot 1
+    fig.add_trace(
+        go.Pie(
+            name="Placed",
+            labels=plot_dataset["Placement Year"],
+            values=plot_dataset["Total Placed"],
+            domain=dict(x=[0, 0.5]),
+        ),
+        row=1,col=1,
+    )
+
+    # Subplot 2
+    fig.add_trace(
+        go.Pie(
+            name="Appeared",
+            labels=plot_dataset["Placement Year"],
+            values=plot_dataset["Total Appeared"],
+            domain=dict(x=[0.5, 1.0]),
+        ),
+        row=1,col=2
+    )
+
+    fig.update_layout(title='Placed and Appeared per Year Percentage',xaxis_title='Placement Year',yaxis_title='Count')
+    yearly_pie_plot_div=plot(fig, output_type='div',include_plotlyjs=False)
+
+    return yearly_pie_plot_div
+
+
+def getdata(years_options):
     dataset = pd.DataFrame(columns = ['Roll Number','Name','Placed_Company','Year'])
     students_applied_rno = PlacementApplicationResponse.objects.filter(placement_application__placement_year__in = years_options).values('student__roll_number').distinct()
     rnos = []
@@ -746,16 +836,23 @@ def getyearlybar(years_options):
     dataset['Placed_Company'] = placed_companies
     dataset['Year'] = years
     total_placed = []
+    total_appeared = []
     for year in years_options:
-        total_placed.append(len(dataset[dataset['Year'] == int(year)]))
+        appeared_dataset = dataset[dataset['Year'] == int(year)]
+        placed_dataset = appeared_dataset[appeared_dataset['Placed_Company'] != '']
+        total_placed.append(len(placed_dataset))
+        total_appeared.append(len(appeared_dataset))
     
     plot_dataset = pd.DataFrame(columns=['Placement Year','Total Placed'])
     plot_dataset['Placement Year'] = years_options
     plot_dataset['Total Placed'] = total_placed
-    fig = px.bar(plot_dataset, x='Placement Year', y='Total Placed')
-    fig.update_layout(title='Yearly Placement Count',xaxis_title='Placement Year',yaxis_title='Total Placed')
-    plot_div=plot(fig, output_type='div',include_plotlyjs=False)
-    return dataset,plot_div
+    plot_dataset['Total Appeared'] = total_appeared
+
+    yearly_bar_plots = getbarplots(plot_dataset)
+    yearly_pie_plots = getpieplots(plot_dataset)
+    yearly_scatter_plots = getscatterplots(plot_dataset)
+    return plot_dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots
+    
 
 def report_view(request):
     year_options = PlacementStatus.objects.values('placed_year').distinct()
@@ -765,5 +862,5 @@ def report_view(request):
     if request.method == 'POST':
         if request.POST.get('yearly'):
             years = request.POST.getlist('yearly-select')
-            dataset,plot = getyearlybar(years)
-            return render(request,'report.html',{'year_options': year_options,'plot':plot})
+            dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots = getdata(years)
+            return render(request,'report.html',{'year_options': year_options,'bar_plot':yearly_bar_plots,'pie_plot':yearly_pie_plots,'scatter_plot':yearly_scatter_plots})
