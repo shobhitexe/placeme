@@ -53,20 +53,52 @@
                 </div>
             </div>
         </div>
+        
+
         <div class="col-lg-6 col-md-6">
             <div class="card ">
                 <div class="card-header">
-                    <h3>Quarterly Sales</h3>
+                    <h3>Company Report</h3>
+                    <select style="width: 300px;" data-placeholder="Select company" multiple="multiple" name="company-select" class="chosen-select" id="company-select">
+                        {% for option in company_options %}
+                        <option>{{option.placement_application__company__name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if bar_plot %}
+                <div class="card-block filter yearly-bar">
+                    {% autoescape off %}     
+                    {{bar_plot}}  
+                    {% endautoescape %}
+                </div>
+                {% endif %}
+                {% if pie_plot %}
+                <div class="card-block filter yearly-pie">
+                    {% autoescape off %}     
+                    {{pie_plot}}  
+                    {% endautoescape %}
+                </div>
+                {% endif %}
+                {% if scatter_plot %}
+                <div class="card-block filter yearly-scatter">
+                    {% autoescape off %}     
+                    {{scatter_plot}}  
+                    {% endautoescape %}
                 </div>
                 <div class="card-block">
-                    <p>
-                        Quarterly Sales reports show that the campaign made tremendous progress towards the end of the period. 
-                        This signifies important changes as opposed to last-year campaign, which demonstrated equal growth. 
-                        It underlines the necessety of regular reports, to detect such changes in earlier stages.                         
-                    </p>
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-bar">Bar Plot</button>
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-pie">Pie Plot</button>
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-scatter">Scatter Plot</button>
+                </div>
+                {% endif %}
+                <br>
+                <div class="card-footer">
+                    <button type="submit" name="company" value="1" class="btn btn-primary">Generate Report</button>
                 </div>
             </div>
         </div>
+
+
     </div>
     <hr />
     <div class="row">

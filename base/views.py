@@ -810,7 +810,7 @@ def getpieplots(plot_dataset):
     return yearly_pie_plot_div
 
 
-def getdata(years_options):
+def getyearlydata(years_options):
     dataset = pd.DataFrame(columns = ['Roll Number','Name','Placed_Company','Year'])
     students_applied_rno = PlacementApplicationResponse.objects.filter(placement_application__placement_year__in = years_options).values('student__roll_number').distinct()
     rnos = []
@@ -854,13 +854,120 @@ def getdata(years_options):
     return plot_dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots
     
 
+
+def getcompanydata(company_options):
+    dataset = pd.DataFrame(columns = ['Company','Salary','Roll Number','Student Name','Year','Day','Status'])
+    students_applied_rno = PlacementApplicationResponse.objects.filter(placement_application__company__name__in = company_options).values('student__roll_number').distinct()
+    rnos = []
+    names = []
+    companies = []
+    years = []
+    salaries = [] # TODO
+    days = [] # TODO
+    status = []
+    for company in company_options :
+        for rno in students_applied_rno:
+            roll_num = rno['student__roll_number']
+            student = Student.objects.get(roll_number = roll_num)
+            responses = PlacementApplicationResponse.objects.filter(placement_application__company__name = company,student=student)
+            if len(responses) == 0:
+                continue
+            else:
+                companies.append(company)
+                rnos.append(roll_num)
+                names.append(student.user.get_full_name())
+                years.append(student.expected_grad_year)
+                try:
+                    pmstatus = PlacementStatus.objects.get(student=student)
+                    if pmstatus.placed_company_name == company:
+                        status.append('Placed')
+                    else:
+                        offers = json.loads(pmstatus.offers)
+                        for key in offers.keys():
+                            if company in offers[key]:
+                                status.append('Offered')
+                                break
+                        else:
+                            status.append('Not Offered')
+                except:
+                    status.append('Not Offered')
+
+    dataset['Company'] = companies
+    dataset['Roll Number'] = rnos
+    dataset['Student Name'] = names
+    dataset['Year'] = years
+    dataset['Status'] = status
+
+    print(dataset)
+            # try :
+            #     status = PlacementStatus.objects.get(student=student)
+            #     if status.placed_company_name == '' or status.placed_company_name == None:
+            #         placed_companies.append('')
+            #     else:
+            #         placed_companies.append(status.placed_company_name)
+            # except:
+            #     placed_companies.append('')
+
+
+    # for rno in students_applied_rno:
+    #     roll_num = rno['student__roll_number']
+    #     student = Student.objects.get(roll_number = roll_num)
+    #     years.append(student.expected_grad_year)
+    #     rnos.append(roll_num)
+    #     names.append(student.user.get_full_name())
+    #     try :
+    #         status = PlacementStatus.objects.get(student=student)
+    #         if status.placed_company_name == '' or status.placed_company_name == None:
+    #             placed_companies.append('')
+    #         else:
+    #             placed_companies.append(status.placed_company_name)
+    #     except:
+    #         placed_companies.append('')
+    # dataset['Roll Number'] = rnos
+    # dataset['Name'] = names
+    # dataset['Placed_Company'] = placed_companies
+    # dataset['Year'] = years
+    # total_placed = []
+    # total_appeared = []
+    # for year in years_options:
+    #     appeared_dataset = dataset[dataset['Year'] == int(year)]
+    #     placed_dataset = appeared_dataset[appeared_dataset['Placed_Company'] != '']
+    #     total_placed.append(len(placed_dataset))
+    #     total_appeared.append(len(appeared_dataset))
+    
+    # plot_dataset = pd.DataFrame(columns=['Placement Year','Total Placed'])
+    # plot_dataset['Placement Year'] = years_options
+    # plot_dataset['Total Placed'] = total_placed
+    # plot_dataset['Total Appeared'] = total_appeared
+
+    # yearly_bar_plots = getbarplots(plot_dataset)
+    # yearly_pie_plots = getpieplots(plot_dataset)
+    # yearly_scatter_plots = getscatterplots(plot_dataset)
+    # return plot_dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots
+    return
+    
+
+
+
 def report_view(request):
     year_options = PlacementStatus.objects.values('placed_year').distinct()
+    company_options = PlacementApplicationResponse.objects.values('placement_application__company__name').distinct()
     if request.method == 'GET':
-        return render(request,'report.html',{'year_options': year_options})
+        return render(request,'report.html',{'year_options': year_options,'company_options':company_options})
 
     if request.method == 'POST':
         if request.POST.get('yearly'):
             years = request.POST.getlist('yearly-select')
-            dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots = getdata(years)
-            return render(request,'report.html',{'year_options': year_options,'bar_plot':yearly_bar_plots,'pie_plot':yearly_pie_plots,'scatter_plot':yearly_scatter_plots})
+            dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots = getyearlydata(years)
+            return render(request,'report.html',
+            {'year_options': year_options,'bar_plot':yearly_bar_plots,
+            'pie_plot':yearly_pie_plots,'scatter_plot':yearly_scatter_plots,
+            'company_options':company_options})
+
+    
+    if request.method == 'POST':
+        if request.POST.get('company'):
+            companies = request.POST.getlist('company-select')
+            getcompanydata(companies)
+            return render(request,'report.html',{'year_options': year_options,
+            'company_options':company_options})
