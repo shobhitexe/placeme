@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
+import numpy as np
 from .models import Company, PlacementApplicationResponse,Student,PlacementApplication,PlacementApplicationResponseFiles,PlacementStatus
 from django.contrib.auth.password_validation import password_changed,validate_password
 from .forms import AddCompanyForm,StudentDetailsForm,CompanyApplicationForm
@@ -721,8 +722,8 @@ def backup_view(request):
             response['Content-Disposition'] = 'attachment; filename="placement-status.csv"'
             return response
 
-def getscatterplots(plot_dataset):
-    fig = make_subplots(rows=1, cols=2)
+def getyearlyscatterplots(plot_dataset):
+    fig = make_subplots(rows=1, cols=2,subplot_titles=("Placed",'Appeared'))
     # Subplot 1
     fig.add_trace(
         go.Scatter(
@@ -751,8 +752,8 @@ def getscatterplots(plot_dataset):
     return yearly_scatter_plot_div
 
 
-def getbarplots(plot_dataset):
-    fig = make_subplots(rows=1, cols=2)
+def getyearlybarplots(plot_dataset):
+    fig = make_subplots(rows=1, cols=2,subplot_titles=("Placed",'Appeared'))
     # Subplot 1
     fig.add_trace(
         go.Bar(
@@ -780,8 +781,8 @@ def getbarplots(plot_dataset):
 
     return yearly_bar_plot_div
 
-def getpieplots(plot_dataset):
-    fig = make_subplots(rows=1, cols=2,specs=[[{"type": "pie"}, {"type": "pie"}]])
+def getyearlypieplots(plot_dataset):
+    fig = make_subplots(rows=1, cols=2,specs=[[{"type": "pie"}, {"type": "pie"}]],subplot_titles=("Placed",'Appeared'))
     # Subplot 1
     fig.add_trace(
         go.Pie(
@@ -808,6 +809,101 @@ def getpieplots(plot_dataset):
     yearly_pie_plot_div=plot(fig, output_type='div',include_plotlyjs=False)
 
     return yearly_pie_plot_div
+
+
+def getcompanybarplots(plot_dataset):
+    fig = make_subplots(rows=1, cols=2,subplot_titles=("Placed",'Appeared'))
+    # Subplot 1
+    fig.add_trace(
+        go.Bar(
+            name="Total Placed",
+            x=plot_dataset["Company"],
+            y=plot_dataset["Total Placed"],
+        ),
+        row=1,
+        col=1,
+    )
+
+    # Subplot 2
+    fig.add_trace(
+        go.Bar(
+            name="Total Appeared",
+            x=plot_dataset["Company"],
+            y=plot_dataset["Total Appeared"],
+        ),
+        row=1,
+        col=2,
+    )
+
+    fig.update_layout(title='Company-wise Placed and Appeared Count',xaxis_title='Company',yaxis_title='Count')
+    company_bar_plot_div=plot(fig, output_type='div',include_plotlyjs=False)
+
+    return company_bar_plot_div
+
+
+def getcompanyscatterplots(datasets,companies):
+    fig = make_subplots(rows=1, cols=2,subplot_titles=("Placed",'Appeared'))
+    # Subplot 1
+    for dataset,company in zip(datasets,companies):
+        fig.add_trace(
+            go.Scatter(
+                x=dataset['Year'],
+                y=dataset['Placed'],
+                mode = 'lines+markers',
+                name = company,
+            ),
+            row=1,
+            col=1,
+        )
+
+    # Subplot 2
+    for dataset,company in zip(datasets,companies):
+        fig.add_trace(
+            go.Scatter(
+                x=dataset['Year'],
+                y=dataset['Appeared'],
+                mode = 'lines+markers',
+                name = company,
+            ),
+            row=1,
+            col=2,
+        )
+
+    fig.update_layout(title='Company-wise Placed and Appeared',xaxis_title='Placement Year',yaxis_title='Count')
+    company_scatter_plot_div=plot(fig, output_type='div',include_plotlyjs=False)
+
+    return company_scatter_plot_div
+
+
+def getcompanypieplots(plot_dataset):
+    fig = make_subplots(rows=1, cols=2,specs=[[{"type": "pie"}, {"type": "pie"}]],subplot_titles=("Placed",'Appeared'))
+    # Subplot 1
+    fig.add_trace(
+        go.Pie(
+            name="Placed",
+            labels=plot_dataset["Company"],
+            values=plot_dataset["Total Placed"],
+            domain=dict(x=[0, 0.5]),
+        ),
+        row=1,col=1,
+    )
+
+    # Subplot 2
+    fig.add_trace(
+        go.Pie(
+            name="Appeared",
+            labels=plot_dataset["Company"],
+            values=plot_dataset["Total Appeared"],
+            domain=dict(x=[0.5, 1.0]),
+        ),
+        row=1,col=2
+    )
+
+    fig.update_layout(title='Placed and Appeared per Company Percentage',xaxis_title='Placement Year',yaxis_title='Count')
+    company_pie_plot_div=plot(fig, output_type='div',include_plotlyjs=False)
+
+    return company_pie_plot_div
+
 
 
 def getyearlydata(years_options):
@@ -848,9 +944,9 @@ def getyearlydata(years_options):
     plot_dataset['Total Placed'] = total_placed
     plot_dataset['Total Appeared'] = total_appeared
 
-    yearly_bar_plots = getbarplots(plot_dataset)
-    yearly_pie_plots = getpieplots(plot_dataset)
-    yearly_scatter_plots = getscatterplots(plot_dataset)
+    yearly_bar_plots = getyearlybarplots(plot_dataset)
+    yearly_pie_plots = getyearlypieplots(plot_dataset)
+    yearly_scatter_plots = getyearlyscatterplots(plot_dataset)
     return plot_dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots
     
 
@@ -897,54 +993,51 @@ def getcompanydata(company_options):
     dataset['Student Name'] = names
     dataset['Year'] = years
     dataset['Status'] = status
-
     print(dataset)
-            # try :
-            #     status = PlacementStatus.objects.get(student=student)
-            #     if status.placed_company_name == '' or status.placed_company_name == None:
-            #         placed_companies.append('')
-            #     else:
-            #         placed_companies.append(status.placed_company_name)
-            # except:
-            #     placed_companies.append('')
+    plot_dataset = pd.DataFrame(columns=['Company','Total Offered','Total Placed','Total Appeared'])
+    plot_dataset['Company'] = company_options
+    offered = []
+    appeared = []
+    placed = []
+    for company in company_options:
+        offered_idx = np.where((dataset['Company']==company) & (dataset['Status'] != 'Not Offered'))
+        placed_idx =  np.where((dataset['Company']==company) & (dataset['Status'] == 'Placed'))
+        appeared_idx =  np.where((dataset['Company']==company))
+        offered.append(len(dataset.loc[offered_idx]))
+        appeared.append(len(dataset.loc[appeared_idx]))
+        placed.append(len(dataset.loc[placed_idx]))
 
+    plot_dataset['Total Offered'] = offered
+    plot_dataset['Total Placed'] = placed
+    plot_dataset['Total Appeared'] = appeared
 
-    # for rno in students_applied_rno:
-    #     roll_num = rno['student__roll_number']
-    #     student = Student.objects.get(roll_number = roll_num)
-    #     years.append(student.expected_grad_year)
-    #     rnos.append(roll_num)
-    #     names.append(student.user.get_full_name())
-    #     try :
-    #         status = PlacementStatus.objects.get(student=student)
-    #         if status.placed_company_name == '' or status.placed_company_name == None:
-    #             placed_companies.append('')
-    #         else:
-    #             placed_companies.append(status.placed_company_name)
-    #     except:
-    #         placed_companies.append('')
-    # dataset['Roll Number'] = rnos
-    # dataset['Name'] = names
-    # dataset['Placed_Company'] = placed_companies
-    # dataset['Year'] = years
-    # total_placed = []
-    # total_appeared = []
-    # for year in years_options:
-    #     appeared_dataset = dataset[dataset['Year'] == int(year)]
-    #     placed_dataset = appeared_dataset[appeared_dataset['Placed_Company'] != '']
-    #     total_placed.append(len(placed_dataset))
-    #     total_appeared.append(len(appeared_dataset))
+    company_bar_plots = getcompanybarplots(plot_dataset)
+
     
-    # plot_dataset = pd.DataFrame(columns=['Placement Year','Total Placed'])
-    # plot_dataset['Placement Year'] = years_options
-    # plot_dataset['Total Placed'] = total_placed
-    # plot_dataset['Total Appeared'] = total_appeared
+    company_datasets = []
+    for company in company_options:
+        offered = []
+        appeared = []
+        placed = []
+        scatter_years = []
+        for year in set(years):
+            offered_idx = np.where((dataset['Company']==company) & (dataset['Status'] != 'Not Offered') & (dataset['Year'] == year))
+            placed_idx =  np.where((dataset['Company']==company) & (dataset['Status'] == 'Placed') & (dataset['Year'] == year))
+            appeared_idx =  np.where((dataset['Company']==company) & (dataset['Year'] == year))
+            offered.append(len(dataset.loc[offered_idx]))
+            appeared.append(len(dataset.loc[appeared_idx]))
+            placed.append(len(dataset.loc[placed_idx]))
+            scatter_years.append(year)
+        df = pd.DataFrame(columns=['Year','Placed','Appeared'])
+        df['Year'] = scatter_years
+        df['Placed'] = placed
+        df['Appeared'] = appeared
+        company_datasets.append(df)
+        
+    company_scatter_plots = getcompanyscatterplots(company_datasets,company_options)
+    company_pie_plots = getcompanypieplots(plot_dataset)
 
-    # yearly_bar_plots = getbarplots(plot_dataset)
-    # yearly_pie_plots = getpieplots(plot_dataset)
-    # yearly_scatter_plots = getscatterplots(plot_dataset)
-    # return plot_dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots
-    return
+    return plot_dataset,company_bar_plots,company_scatter_plots,company_pie_plots
     
 
 
@@ -960,14 +1053,15 @@ def report_view(request):
             years = request.POST.getlist('yearly-select')
             dataset,yearly_bar_plots,yearly_pie_plots,yearly_scatter_plots = getyearlydata(years)
             return render(request,'report.html',
-            {'year_options': year_options,'bar_plot':yearly_bar_plots,
-            'pie_plot':yearly_pie_plots,'scatter_plot':yearly_scatter_plots,
+            {'year_options': year_options,'yearly_bar':yearly_bar_plots,
+            'yearly_pie':yearly_pie_plots,'yearly_scatter':yearly_scatter_plots,
             'company_options':company_options})
 
     
     if request.method == 'POST':
         if request.POST.get('company'):
             companies = request.POST.getlist('company-select')
-            getcompanydata(companies)
+            dataset,company_bar,company_scatter,company_pie = getcompanydata(companies)
             return render(request,'report.html',{'year_options': year_options,
-            'company_options':company_options})
+            'company_options':company_options,'company_bar':company_bar,
+            'company_scatter':company_scatter,'company_pie':company_pie})

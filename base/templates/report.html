@@ -21,24 +21,24 @@
                         {% endfor %}
                     </select>
                 </div>
-                {% if bar_plot %}
+                {% if yearly_bar %}
                 <div class="card-block filter yearly-bar">
                     {% autoescape off %}     
-                    {{bar_plot}}  
+                    {{yearly_bar}}  
                     {% endautoescape %}
                 </div>
                 {% endif %}
-                {% if pie_plot %}
+                {% if yearly_pie %}
                 <div class="card-block filter yearly-pie">
                     {% autoescape off %}     
-                    {{pie_plot}}  
+                    {{yearly_pie}}  
                     {% endautoescape %}
                 </div>
                 {% endif %}
-                {% if scatter_plot %}
+                {% if yearly_scatter %}
                 <div class="card-block filter yearly-scatter">
                     {% autoescape off %}     
-                    {{scatter_plot}}  
+                    {{yearly_scatter}}  
                     {% endautoescape %}
                 </div>
                 <div class="card-block">
@@ -65,30 +65,30 @@
                         {% endfor %}
                     </select>
                 </div>
-                {% if bar_plot %}
-                <div class="card-block filter yearly-bar">
+                {% if company_bar %}
+                <div class="card-block filter company-bar">
                     {% autoescape off %}     
-                    {{bar_plot}}  
+                    {{company_bar}}  
                     {% endautoescape %}
                 </div>
                 {% endif %}
-                {% if pie_plot %}
-                <div class="card-block filter yearly-pie">
+                {% if company_pie %}
+                <div class="card-block filter company-pie">
                     {% autoescape off %}     
-                    {{pie_plot}}  
+                    {{company_pie}}  
                     {% endautoescape %}
                 </div>
                 {% endif %}
-                {% if scatter_plot %}
-                <div class="card-block filter yearly-scatter">
+                {% if company_scatter %}
+                <div class="card-block filter company-scatter">
                     {% autoescape off %}     
-                    {{scatter_plot}}  
+                    {{company_scatter}}  
                     {% endautoescape %}
                 </div>
                 <div class="card-block">
-                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-bar">Bar Plot</button>
-                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-pie">Pie Plot</button>
-                    <button  type="button" class="btn btn-primary filter-button" data-filter="yearly-scatter">Scatter Plot</button>
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="company-bar">Bar Plot</button>
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="company-pie">Pie Plot</button>
+                    <button  type="button" class="btn btn-primary filter-button" data-filter="company-scatter">Scatter Plot</button>
                 </div>
                 {% endif %}
                 <br>
@@ -168,6 +168,7 @@
 $(document).ready(function(){
     $('.filter').hide();
     $('.filter.yearly-bar').show()
+    $('.filter.company-bar').show()
 
 $(".filter-button").click(function(){
     var value = $(this).attr('data-filter');
