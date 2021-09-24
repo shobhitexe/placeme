@@ -6,6 +6,7 @@
 <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
 <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <p></p>
 <div class="container">
     <form method = "post" action="{% url 'report' %}">
@@ -26,6 +27,9 @@
                     {% autoescape off %}     
                     {{yearly_bar}}  
                     {% endautoescape %}
+                </div>
+                {% else %}
+                <div class="card-block" style="height: 490px;">
                 </div>
                 {% endif %}
                 {% if yearly_pie %}
@@ -49,7 +53,7 @@
                 {% endif %}
                 <br>
                 <div class="card-footer">
-                    <button type="submit" name="yearly" value="1" class="btn btn-primary">Generate Report</button>
+                    <button type="submit" name="yearly" value="1" class="btn btn-primary me-2">Generate Report</button>
                 </div>
             </div>
         </div>
@@ -70,6 +74,9 @@
                     {% autoescape off %}     
                     {{company_bar}}  
                     {% endautoescape %}
+                </div>
+                {% else %}
+                <div class="card-block" style="height: 490px;">
                 </div>
                 {% endif %}
                 {% if company_pie %}
@@ -97,61 +104,7 @@
                 </div>
             </div>
         </div>
-
-
     </div>
-    <hr />
-    <div class="row">
-        <div class="col-lg-6 col-md-6">
-            <div class="card ">
-                <div class="card-header">
-                    <h3>Quarterly Sales</h3>
-                </div>
-                <div class="card-block">
-                    <div id="performance2" style="height: 270px;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6">
-            <div class="card ">
-                <div class="card-header">
-                    <h3>Visits Stats</h3>
-                </div>
-                <div class="card-block">
-                    <p>
-                        Campaign budgets have proven to have little influence over the predictability and stable flow of visitors. 
-                        This underlines the necessity for additioal statistics and further analysis. 
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-lg-6 col-md-6">
-            <div class="card ">
-                <div class="card-header">
-                    <h3>Quarterly Sales</h3>
-                </div>
-                <div class="card-block">
-                    <div id="performance3" style="height: 270px;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6">
-            <div class="card ">
-                <div class="card-header">
-                    <h3>Budget Stats</h3>
-                </div>
-                <div class="card-block">
-                    <p>
-                        The budget report is in par with the initial business plan. No deviations were detected. 
-                        Better funding is not guaranteed to have direct sales impact, unless further analysis is performed. 
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>  
     </form>
 </div>
 
@@ -169,7 +122,7 @@ $(document).ready(function(){
     $('.filter').hide();
     $('.filter.yearly-bar').show()
     $('.filter.company-bar').show()
-
+    
 $(".filter-button").click(function(){
     var value = $(this).attr('data-filter');
     $('.filter').not('.'+value).hide('3000');

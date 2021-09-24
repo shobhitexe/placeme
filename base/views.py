@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import pandas as pd
+import io
 import numpy as np
 from .models import Company, PlacementApplicationResponse,Student,PlacementApplication,PlacementApplicationResponseFiles,PlacementStatus
 from django.contrib.auth.password_validation import password_changed,validate_password
@@ -31,18 +32,24 @@ def index_view(request):
 
 @csrf_exempt
 def login_handle_view(request):
+    company_count = len(Company.objects.values_list('name',flat=True).distinct())
+    appeared_count = len(PlacementApplicationResponse.objects.values('student__roll_number').distinct())
+    placed_count = len(PlacementStatus.objects.all()) - len(PlacementStatus.objects.filter(placed_company_name = None))
+    guarantee = round((placed_count/appeared_count)*100,2)
     if request.method == 'POST':
         username = request.POST.get('uname')
         password = request.POST.get('pwd')
         user = authenticate(username = username, password=password)
         if user is not None:
             login(request,user)
-            return render(request,'home.html')
+            return render(request,'home.html',{'company_count':company_count,'appeared_count':appeared_count,
+            'placed_count':placed_count,'guarantee':guarantee})
         else:
             messages.error(request,"Invalid username or password.")
             return redirect(request.META['HTTP_REFERER'])
     else:
-        return render(request,'home.html')
+        return render(request,'home.html',{'company_count':company_count,'appeared_count':appeared_count,
+        'placed_count':placed_count,'guarantee':guarantee})
 
 
 def student_cred_view(request):
@@ -1057,11 +1064,10 @@ def report_view(request):
             'yearly_pie':yearly_pie_plots,'yearly_scatter':yearly_scatter_plots,
             'company_options':company_options})
 
-    
-    if request.method == 'POST':
         if request.POST.get('company'):
             companies = request.POST.getlist('company-select')
             dataset,company_bar,company_scatter,company_pie = getcompanydata(companies)
             return render(request,'report.html',{'year_options': year_options,
             'company_options':company_options,'company_bar':company_bar,
             'company_scatter':company_scatter,'company_pie':company_pie})
+
