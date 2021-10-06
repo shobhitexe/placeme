@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export',
+    'bulma',
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

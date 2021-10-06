@@ -28,7 +28,18 @@ from plotly.subplots import make_subplots
 def index_view(request):
     if request.user is not None:
         logout(request)
+    return render(request,'index2.html')
+
+def index_view2(request):
+    if request.user is not None:
+        logout(request)
     return render(request,'index.html')
+    
+def company2_view(request):
+    return render(request,'company2.html')
+
+def statistic_view(request):
+    return render(request,'Statistics.html')
 
 @csrf_exempt
 def login_handle_view(request):

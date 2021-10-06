@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+    />
+
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
+    ></script>
+    <title>{% block title %}PlaceME{% endblock %}</title>
+    {% load static %}
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/top.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/footer.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/chat.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+    <!-- <link href="{% static 'css/index.css' %}" rel="stylesheet" /> -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  </head>
+  <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="">
+          <!-- <img src="" width="112" height="28"> -->
+        </a>
+
+        <a
+          role="button"
+          class="navbar-burger burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navbarBasicExample"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item" href="/"><strong>PlaceME</strong></a>
+          <a class="navbar-item" href="/#about" id="button">
+            <strong>Objectives</strong>
+          </a>
+          <a class="navbar-item" href="/#events" id="button1">
+            <strong>Events</strong>
+          </a>
+          <a class="navbar-item" href="/Statistics">
+            <strong>Stats</strong>
+          </a>
+          <a class="navbar-item" href="{% url 'company2' %}">
+            <strong>Companies</strong>
+          </a>
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons">
+              <a class="button is-primary is-light" href="/">
+                <strong
+                  ><i class="fa fa-user" aria-hidden="true"></i>
+                  {{request.user.username}}</strong
+                >
+              </a>
+              <a class="button is-danger is-light" href="/logout">
+                <strong>Log out</strong>
+              </a>
+            </div>
+            {% else %}
+            <div class="buttons">
+              <a class="button is-light is-danger" href="{% url 'index' %}">
+                <strong>Log in</strong>
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </nav>
+    {%block content%} {% endblock %}
+  </body>
+</html>

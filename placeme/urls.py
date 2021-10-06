@@ -15,16 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,re_path
-from base.views import index_view,login_handle_view,student_cred_view,company_view,profile_view,academics_view,createform_view,placement_applications_view,placement_status_view,placement_offers_view,backup_view,report_view
+from base.views import index_view,index_view2,login_handle_view,student_cred_view,company_view,company2_view,statistic_view,profile_view,academics_view,createform_view,placement_applications_view,placement_status_view,placement_offers_view,backup_view,report_view
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index_view, name='index'),
+    path('', index_view, name='index2'),
+    path('login/', index_view2, name='index'),
     path('home/',login_handle_view,name='loginhandle'),
     path('student-cred/',student_cred_view,name='student_cred'),
     path('companies/',company_view,name='company'),
+    path('companies2/',company2_view,name='company2'),
+    path('Statistics/',statistic_view,name='statistics'),
     path('profile/',profile_view,name='profile'),
     path('academics/',academics_view,name='academics'),
     re_path(r'^create-form/(?P<company_id>[0-9])/$', createform_view, name='createform'),
