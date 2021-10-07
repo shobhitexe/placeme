@@ -33,7 +33,7 @@ def index_view(request):
 def index_view2(request):
     if request.user is not None:
         logout(request)
-    return render(request,'index.html')
+    return render(request,'login.html')
     
 def company2_view(request):
     return render(request,'company2.html')
